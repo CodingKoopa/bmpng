@@ -22,14 +22,16 @@ class BMPExtract:
         if(self.bpp != 24):
             print("only 24 bits per pixel currently supported, will not create pixel array")
             pass
-        self.arr = []
+        #NOTE: stores pixels as arr[y][x] because i'm an idiot, may change later but for now it's corrected in getPixel()
+        self.arr = [] #NOTE: colors are stored as (blue, green, red) to maintain bmp parity -  may change depending on png format
         rowSize = int((self.bpp*self.width+31)/32)*4
         for x in range(self.width):
             col = []
             row = x*rowSize
             for y in range(self.height):
                 col.append((int(image[row+(y*3)]), int(image[row+(y*3)+1]), int(image[row+(y*3)+2])))
-                print(col[y])
+                #print(col[y])
+            self.arr.append(col)
 
     
     def getValid(self):
@@ -73,3 +75,8 @@ class BMPExtract:
     
     def getArr(self):
         return self.arr
+    
+    def getPixel(self, x, y):
+        x-= 1
+        y = self.height - y
+        return self.arr[y][x]
