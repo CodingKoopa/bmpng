@@ -74,3 +74,9 @@ class BMPExtract:
     
     def getVerticalRes(self):
         return self.verticalRes
+    
+    def getPalatte(self):
+        return self.palatte
+    
+    def getImportantColors(self):
+        return self.importantColors
