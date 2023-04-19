@@ -1,3 +1,6 @@
+# Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 from bmpExtract import BMPExtract
 
 filename = input("what file would you like to open? (type EXIT to close program) ")

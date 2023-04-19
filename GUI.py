@@ -1,3 +1,6 @@
+# Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import tkinter
 from tkinter import *
 from tkinter import ttk
