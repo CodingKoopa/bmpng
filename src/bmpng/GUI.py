@@ -33,14 +33,14 @@ class Display(ttk.Frame):
 class StartPage(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
-        self.chomp = tkinter.PhotoImage(file='./data/assets/chompchomp-small.png')
+        self.chomp = tkinter.PhotoImage(file='data/assets/chompchomp-small.png')
         open_button = ttk.Button(self, image=self.chomp, text='feed me bitmaps', compound=tkinter.RIGHT, command=lambda: self.select_file(container))
         open_button.pack(expand=True)
         self.pack(expand=True)
 
     def select_file(self, container):
         filetypes = (('bitmap image', '*.bmp'), ('all files', '*.*'))
-        filename = filedialog.askopenfilename(title='bmp plz', initialdir="./bitmaps", filetypes=filetypes)
+        filename = filedialog.askopenfilename(title='bmp plz', initialdir="data/sample", filetypes=filetypes)
         if(filename != ''):
             bmp = BMPExtract(filename)
             self.pack_forget()
