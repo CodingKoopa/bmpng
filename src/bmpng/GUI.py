@@ -1,6 +1,7 @@
 # Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
 # SPDX-License-Identifier: GPL-2.0-or-later
 
+import os
 import tkinter
 from tkinter import *
 from tkinter import ttk
@@ -53,7 +54,10 @@ class GUI(tkinter.Tk):
     def __init__(self):
         super().__init__()
 
-        self.iconbitmap('./data/assets/bulbasaur.ico')
+        if "nt" == os.name:
+            self.iconbitmap('data/assets/icon.ico')
+        else:
+            self.iconbitmap('@data/assets/icon.xbm')
         self.title("bitmap decoder")
         window_width = int(self.winfo_screenwidth()/4)
         window_height = int(self.winfo_screenheight()/2)
