@@ -32,6 +32,10 @@ or:
 python3 src/main.py gui
 ```
 
+## Contributing
+
+The code is formatted with [black](https://black.readthedocs.io/en/stable/)
+
 ## License
 
 This project is licensed as GPLv2+. See the [LICENSE](/LICENSE) file for more details.
