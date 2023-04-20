@@ -22,3 +22,6 @@ classifiers = [
 
 [project.urls]
 repository = "https://github.com/CodingKoopa/bmpng"
+
+[tool.ruff]
+select = ["E", "F", "I001", "I002"]
