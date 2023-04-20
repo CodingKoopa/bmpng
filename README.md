@@ -34,7 +34,7 @@ python3 src/main.py gui
 
 ## Contributing
 
-The code is formatted with [black](https://black.readthedocs.io/en/stable/) and linted with [Ruff](https://ruff.rs)
+The code is formatted with [black](https://black.readthedocs.io/en/stable/) and linted with [Ruff](https://ruff.rs).
 
 ## License
 
