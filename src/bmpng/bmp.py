@@ -1,7 +1,7 @@
 # Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-class BMPExtract:
+class Bmp:
     def __init__(self, filename):
         in_file = open(filename, "rb")
         bmp = in_file.read()

@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import os
+import importlib.resources
 import tkinter
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter.messagebox import showinfo
-from bmpExtract import BMPExtract
+from .bmp import Bmp
 
 class Display(ttk.Frame):
     def __init__(self, container, file):
@@ -34,7 +35,7 @@ class Display(ttk.Frame):
 class StartPage(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
-        self.chomp = tkinter.PhotoImage(file='data/assets/chompchomp-small.png')
+        self.chomp = tkinter.PhotoImage(file=importlib.resources.path(__package__ + '.data.assets', 'chompchomp-small.png'))
         open_button = ttk.Button(self, image=self.chomp, text='feed me bitmaps', compound=tkinter.RIGHT, command=lambda: self.select_file(container))
         open_button.pack(expand=True)
         self.pack(expand=True)
@@ -43,21 +44,21 @@ class StartPage(ttk.Frame):
         filetypes = (('bitmap image', '*.bmp'), ('all files', '*.*'))
         filename = filedialog.askopenfilename(title='bmp plz', initialdir="data/sample", filetypes=filetypes)
         if(filename != ''):
-            bmp = BMPExtract(filename)
+            bmp = Bmp(filename)
             self.pack_forget()
             display = Display(container=container, file=bmp)
             display.tkraise()
             # message = "File size is " + str(bmp.getSize()) + " bytes"
             # showinfo(title='file info', message=message)
 
-class GUI(tkinter.Tk):
+class Gui(tkinter.Tk):
     def __init__(self):
         super().__init__()
 
         if "nt" == os.name:
-            self.iconbitmap('data/assets/icon.ico')
+            self.iconbitmap(importlib.resources.path(__package__ + '.data.assets', 'icon.ico'))
         else:
-            self.iconbitmap('@data/assets/icon.xbm')
+            self.iconbitmap('@' + str(importlib.resources.path(__package__ + '.data.assets', 'icon.xbm')))
         self.title("bitmap decoder")
         window_width = int(self.winfo_screenwidth()/4)
         window_height = int(self.winfo_screenheight()/2)
@@ -67,5 +68,5 @@ class GUI(tkinter.Tk):
         StartPage(self)
 
 if __name__ == "__main__":
-    gui = GUI()
+    gui = Gui()
     gui.mainloop()
