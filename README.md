@@ -1,4 +1,4 @@
-# bmpng
+# bmpng ![check workflow status](https://github.com/CodingKoopa/bmpng/actions/workflows/check.yml/badge.svg)
 
 ## Running
 
