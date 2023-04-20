@@ -1,6 +1,5 @@
 [project]
 name = "bmpng"
-version = "0.1dev0"
 description = "Utilities for encoding and decoding PNG files"
 readme = "README.md"
 requires-python = ">=3.7"
