@@ -23,9 +23,3 @@ classifiers = [
 
 [project.urls]
 repository = "https://github.com/CodingKoopa/bmpng"
-
-[project.scripts]
-bmpng = "bmpng.__main__:cli"
-
-[project.gui-scripts]
-bmpng-gui = "bmpng.__main__:gui"

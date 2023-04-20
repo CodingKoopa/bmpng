@@ -2,13 +2,14 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import os
-import importlib.resources
 import tkinter
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter.messagebox import showinfo
-from .bmp import Bmp
+from bmp import Bmp
+
+dirname = os.path.dirname(__file__)
 
 class Display(ttk.Frame):
     def __init__(self, container, file):
@@ -35,14 +36,14 @@ class Display(ttk.Frame):
 class StartPage(ttk.Frame):
     def __init__(self, container):
         super().__init__(container)
-        self.chomp = tkinter.PhotoImage(file=importlib.resources.path(__package__ + '.data.assets', 'chompchomp-small.png'))
+        self.chomp = tkinter.PhotoImage(file=os.path.join(dirname, 'data/assets/chompchomp-small.png'))
         open_button = ttk.Button(self, image=self.chomp, text='feed me bitmaps', compound=tkinter.RIGHT, command=lambda: self.select_file(container))
         open_button.pack(expand=True)
         self.pack(expand=True)
 
     def select_file(self, container):
         filetypes = (('bitmap image', '*.bmp'), ('all files', '*.*'))
-        filename = filedialog.askopenfilename(title='bmp plz', initialdir="data/sample", filetypes=filetypes)
+        filename = filedialog.askopenfilename(title='bmp plz', initialdir=os.path.join(dirname, '../sample'), filetypes=filetypes)
         if(filename != ''):
             bmp = Bmp(filename)
             self.pack_forget()
@@ -56,9 +57,9 @@ class Gui(tkinter.Tk):
         super().__init__()
 
         if "nt" == os.name:
-            self.iconbitmap(importlib.resources.path(__package__ + '.data.assets', 'icon.ico'))
+            self.iconbitmap(os.path.join(dirname, 'data/assets/icon.ico'))
         else:
-            self.iconbitmap('@' + str(importlib.resources.path(__package__ + '.data.assets', 'icon.xbm')))
+            self.iconbitmap('@' + os.path.join(dirname, 'data/assets/icon.xbm'))
         self.title("bitmap decoder")
         window_width = int(self.winfo_screenwidth()/4)
         window_height = int(self.winfo_screenheight()/2)

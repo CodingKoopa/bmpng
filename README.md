@@ -2,22 +2,28 @@
 
 ## Running
 
-Without virtual environment:
-
+To use the command line interface:
 ```
-$ cd src
-$ python -m bmpng ...
+python3 src/main.py ...
 ```
 
-With virtual environment:
-
+To launch the terminal user interface:
 ```
-$ python3 -m venv .venv # only needs to be done once
-$ . .venv/bin/activate # only needs to be done once per session
-$ pip install -e .
-$ bmpng ...
+python3 src/tui.py
+```
+or:
+```
+python3 src/main.py tui
 ```
 
+To launch the graphical user interface:
+```
+python3 src/gui.py
+```
+or:
+```
+python3 src/main.py gui
+```
 
 ## License
 

@@ -1,7 +1,7 @@
 # Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-from .bmp import Bmp
+from bmp import Bmp
 
 def main_loop():
 	filename = input("what file would you like to open? (type EXIT to close program) ")
@@ -48,3 +48,7 @@ def main_loop():
 			green = pixel[1]
 			blue = pixel[0]
 			print(f"R = {red}, G = {green}, B = {blue}; hex code = "+ hex(red)+hex(green).lstrip("0x")+hex(blue).lstrip("0x"))
+
+if __name__ == "__main__":
+    main_loop()
+

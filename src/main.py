@@ -2,13 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 def gui():
-	from .gui import Gui
+	from gui import Gui
 	window = Gui()
 	window.mainloop()
 	return 0
 
 def tui():
-	from . import tui
+	import tui
 	tui.main_loop()
 	return 0
 
