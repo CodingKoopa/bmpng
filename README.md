@@ -1,4 +1,4 @@
-# bmpng ![check workflow status](https://github.com/CodingKoopa/bmpng/actions/workflows/check.yml/badge.svg) ![powered by :3](https://img.shields.io/badge/powered%20by-%3A3-brightgreen)
+# bmpng ![check workflow status](https://github.com/CodingKoopa/bmpng/actions/workflows/check.yml/badge.svg) ![powered by :3](https://img.shields.io/badge/powered%20by-%3A3-success)
 
 ## Running
 
