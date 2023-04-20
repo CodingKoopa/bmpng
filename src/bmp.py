@@ -33,26 +33,30 @@ class Bmp:
         self.importantColors = int.from_bytes(dib[36:40], "little")
         if self.bpp != 24:
             print(
-                "only 24 bits per pixel currently supported, will not create pixel array"
+                "only 24 bits per pixel currently supported, "
+                + "will not create pixel array"
             )
             pass
         if self.compression == 4:
             print(
-                "that...that's a jpeg. you took a jpeg and gave it a bmp header. go sit in the corner and think about what you've done."
+                "that...that's a jpeg. you took a jpeg and gave it a bmp header. "
+                + "go sit in the corner and think about what you've done."
             )
             pass
         if self.compression == 5:
             print(
-                "that...that's a png. you took a png and gave it a bmp header. go sit in the corner and think about what you've done."
+                "that...that's a png. you took a png and gave it a bmp header."
+                + "go sit in the corner and think about what you've done."
             )
             pass
         if self.compression != 0:
             print("this program only works for uncompressed bitmaps")
             pass
-        # NOTE: stores pixels as arr[y][x] because i'm an idiot, may change later but for now it's corrected in getPixel()
-        self.arr = (
-            []
-        )  # NOTE: colors are stored as (blue, green, red) to maintain bmp parity -  may change depending on png format
+        # NOTE: stores pixels as arr[y][x] because i'm an idiot,
+        # may change later but for now it's corrected in getPixel()
+        self.arr = []
+        # NOTE: colors are stored as (blue, green, red) to maintain bmp parity -
+        # may change depending on png format
         rowSize = int((self.bpp * self.width + 31) / 32) * 4
         for x in range(self.width):
             col = []

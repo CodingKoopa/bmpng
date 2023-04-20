@@ -25,12 +25,9 @@ def cli():
         description="Encode and decode PNG files",
     )
     subparsers = parser.add_subparsers(title="interfaces", dest="interface")
-    parser_cli = subparsers.add_parser(
-        "cli", help="use the command line interface (default)"
-    )
-    parser_tui = subparsers.add_parser("tui", help="use the text user interface")
-    parser_gui = subparsers.add_parser("gui", help="use the graphical user interface")
-    parser_gui.add_argument("-b", type=str, help="help for b")
+    subparsers.add_parser("cli", help="use the command line interface (default)")
+    subparsers.add_parser("tui", help="use the text user interface")
+    subparsers.add_parser("gui", help="use the graphical user interface")
 
     args = parser.parse_args()
 

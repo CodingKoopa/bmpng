@@ -27,7 +27,8 @@ def main_loop():
         while True:
             # NOTE: 1-indexed, may change later
             request = input(
-                "what pixel do you want color info on? please answer in the form x y (type EXIT to close program) "
+                "what pixel do you want color info on?"
+                + "please answer in the form x y (type EXIT to close program)"
             )
             if request.upper() == "EXIT":
                 print("goodbye!")

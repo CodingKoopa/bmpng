@@ -3,10 +3,9 @@
 
 import os
 import tkinter
-from tkinter import *
 from tkinter import ttk
+from tkinter import Label
 from tkinter import filedialog
-from tkinter.messagebox import showinfo
 from bmp import Bmp
 
 dirname = os.path.dirname(__file__)
