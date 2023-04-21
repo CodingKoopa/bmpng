@@ -67,10 +67,10 @@ class Bmp:
             row = y * rowSize
             for x in range(self.height):
                 self.arr[x][self.height - 1 - y] = (
-                        int(image[row + (x * 3) + 2]),
-                        int(image[row + (x * 3) + 1]),
-                        int(image[row + (x * 3)]),
-                    )
+                    int(image[row + (x * 3) + 2]),
+                    int(image[row + (x * 3) + 1]),
+                    int(image[row + (x * 3)]),
+                )
 
     def getValid(self):
         return self.valid
