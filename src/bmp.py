@@ -57,8 +57,8 @@ class Bmp:
         # NOTE: stores pixels as arr[y][x] because i'm an idiot,
         # may change later but for now it's corrected in getPixel()
         self.arr = []
-        # NOTE: colors are stored as (blue, green, red) to maintain bmp parity -
-        # may change depending on png format
+        # NOTE: colors are stored as (red, green, blue) for png parity
+        # MAKE SURE TO REVERSE THIS WHEN MAKING NEW BMP FILES
         rowSize = int((self.bpp * self.width + 31) / 32) * 4
         for x in range(self.width):
             col = []
@@ -71,7 +71,6 @@ class Bmp:
                         int(image[row + (y * 3)]),
                     )
                 )
-                # print(col[y])
             self.arr.append(col)
 
     def getValid(self):
