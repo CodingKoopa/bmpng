@@ -32,7 +32,7 @@ def write_header(data, level, wbits):
 
     fdict = 0
     # TODO: adjust according to level (this is just what zlib sets it to)
-    flevel = CompressionLevel.DEFAULT
+    flevel = CompressionLevel.FASTEST
     flg = (fdict << 5) | (flevel << 6)
     checknum = (cmf << 8) | flg
     # TODO: Do common implementations set fcheck to 0 if the modulus is 0?
@@ -74,7 +74,7 @@ def main():
         data = f_in.read()
         print(f"read {len(data)} bytes from {path_in}")
     with open(path_refout, "wb") as f_out:
-        b_written = f_out.write(zlib.compress(data))
+        b_written = f_out.write(zlib.compress(data, level=Z_NO_COMPRESSION))
         print(f"wrote {b_written} bytes to {path_refout}")
     with open(path_out, "wb") as f_out:
         b_written = f_out.write(compress(data, Z_NO_COMPRESSION))
