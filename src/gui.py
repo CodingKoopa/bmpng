@@ -43,13 +43,13 @@ class Display(ttk.Frame):
         Label(text=f"compression method = {file.getCompression()}").grid(
             row=7, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"image size = {file.getImgSize()}").grid(
+        Label(text=f"image size = {file.getImgSize()} bytes").grid(
             row=8, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"horizontal resolution = {file.getHorizontalRes()}").grid(
+        Label(text=f"horizontal resolution = {file.getHorizontalRes()} pixels per meter").grid(
             row=9, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"vertical resolution = {file.getVerticalRes()}").grid(
+        Label(text=f"vertical resolution = {file.getVerticalRes()} pixels per meter").grid(
             row=10, column=0, padx=10, pady=3, sticky="w"
         )
         Label(text=f"colors in palatte = {file.getPalatte()}").grid(

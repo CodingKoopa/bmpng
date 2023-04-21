@@ -66,9 +66,9 @@ class Bmp:
             for y in range(self.height):
                 col.append(
                     (
-                        int(image[row + (y * 3)]),
-                        int(image[row + (y * 3) + 1]),
                         int(image[row + (y * 3) + 2]),
+                        int(image[row + (y * 3) + 1]),
+                        int(image[row + (y * 3)]),
                     )
                 )
                 # print(col[y])

@@ -21,16 +21,16 @@ def main_loop():
         print("color planes = " + str(bmp.getPlanes()))
         print("bits per pixel = " + str(bmp.getBPP()))
         print("compression method = " + str(bmp.getCompression()))
-        print("image size = " + str(bmp.getImgSize()))
-        print("horizonal resolution = " + str(bmp.getHorizontalRes()))
-        print("vertical resolution = " + str(bmp.getVerticalRes()))
+        print("image size = " + str(bmp.getImgSize()) + " bytes")
+        print("horizonal resolution = " + str(bmp.getHorizontalRes()) + " pixels per meter")
+        print("vertical resolution = " + str(bmp.getVerticalRes()) + " pixels per meter")
         print("colors in palette = " + str(bmp.getPalatte()))
         print("important colors = " + str(bmp.getImportantColors()))
         while True:
             # NOTE: 1-indexed, may change later
             request = input(
                 "what pixel do you want color info on?"
-                + "please answer in the form x y (type EXIT to close program)"
+                + "please answer in the form x y (type EXIT to close program) "
             )
             if request.upper() == "EXIT":
                 print("goodbye!")
@@ -50,9 +50,9 @@ def main_loop():
                 print("please no negatives :(")
                 continue
             pixel = bmp.getPixel(x, y)
-            red = pixel[2]
+            red = pixel[0]
             green = pixel[1]
-            blue = pixel[0]
+            blue = pixel[2]
             print(
                 f"R = {red}, G = {green}, B = {blue}; hex code = "
                 + hex(red)
