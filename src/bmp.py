@@ -54,24 +54,23 @@ class Bmp:
         if self.compression != 0:
             print("this program only works for uncompressed bitmaps")
             pass
-        # NOTE: stores pixels as arr[y][x] because i'm an idiot,
-        # may change later but for now it's corrected in getPixel()
+        # now stores pixels as [x][y] from top to bottom
         self.arr = []
+        for x in range(self.width):
+            self.arr.append([])
+            for y in range(self.height):
+                self.arr[x].append([])
         # NOTE: colors are stored as (red, green, blue) for png parity
         # MAKE SURE TO REVERSE THIS WHEN MAKING NEW BMP FILES
         rowSize = int((self.bpp * self.width + 31) / 32) * 4
-        for x in range(self.width):
-            col = []
-            row = x * rowSize
-            for y in range(self.height):
-                col.append(
-                    (
-                        int(image[row + (y * 3) + 2]),
-                        int(image[row + (y * 3) + 1]),
-                        int(image[row + (y * 3)]),
+        for y in range(self.width):
+            row = y * rowSize
+            for x in range(self.height):
+                self.arr[x][self.height - 1 - y] = (
+                        int(image[row + (x * 3) + 2]),
+                        int(image[row + (x * 3) + 1]),
+                        int(image[row + (x * 3)]),
                     )
-                )
-            self.arr.append(col)
 
     def getValid(self):
         return self.valid
@@ -117,5 +116,5 @@ class Bmp:
 
     def getPixel(self, x, y):
         x -= 1
-        y = self.height - y
-        return self.arr[y][x]
+        y -= 1
+        return self.arr[x][y]
