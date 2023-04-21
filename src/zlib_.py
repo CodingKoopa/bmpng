@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import struct
+from dataclasses import dataclass
 from enum import IntEnum
 
 # zlib container RFC: https://www.rfc-editor.org/rfc/rfc1950
@@ -27,21 +28,64 @@ class CompressionLevel(IntEnum):
     SLOWEST = 3
 
 
-def write_header(data, level, wbits):
-    cmf = CompressionMethod.DEFLATE | ((wbits - 8) << 4)
+@dataclass
+class Zlib:
+    @dataclass
+    class Header:
+        cm: CompressionMethod = None
+        wbits: int = None
+        flevel: CompressionLevel = None
+        fdict: bool = None
 
-    fdict = 0
-    # TODO: adjust according to level (this is just what zlib sets it to)
-    flevel = CompressionLevel.FASTEST
-    flg = (fdict << 5) | (flevel << 6)
-    checknum = (cmf << 8) | flg
-    # TODO: Do common implementations set fcheck to 0 if the modulus is 0?
-    # Us setting it to 31 is correct, but could be unconventional.
-    FCHECKBITS = 2**5 - 1
-    fcheck = FCHECKBITS - (checknum % FCHECKBITS)
-    flg |= fcheck
+        def __bytes__(self):
+            cinfo = self.wbits - 8
+            cmf = self.cm | cinfo << 4
 
-    data.extend(struct.pack("!BB", cmf, flg))
+            flg = (self.fdict << 5) | (self.flevel << 6)
+            # TODO: Do common implementations set fcheck to 0 if the modulus is 0?
+            # Us setting it to 31 is correct, but could be unconventional.
+            FCHECKBITS = 2**5 - 1
+            fcheck = FCHECKBITS - ((cmf << 8 | flg)) % FCHECKBITS
+            flg |= fcheck
+
+            return struct.pack("!BB", cmf, flg)
+
+    header: Header = None
+    compressed_data: bytes = None
+    adler32: int = None
+
+    def __bytes__(self):
+        data = bytearray()
+        data += bytes(self.header)
+        data += self.compressed_data
+        data += struct.pack("!I", self.adler32)
+        return bytes(data)
+
+    # Utilities for parsing a zlib container:
+
+    @classmethod
+    def from_data(data):
+        # TODO: read header, store COMPRESSED data
+        pass
+
+    def decompress_data(self):
+        # TODO return DECOMPRESSED data
+        return self.compressed_data
+
+    # Utilities for creating a zlib container:
+
+    def setup_header(self, level, wbits):
+        self.header = Zlib.Header()
+        self.header.cm = CompressionMethod.DEFLATE
+        self.header.wbits = wbits
+        # TODO: adjust according to level
+        self.header.flevel = CompressionLevel.FASTEST
+        self.header.fdict = False
+
+    def compress(self, uncompressed_data):
+        # TODO
+        self.compressed_data = uncompressed_data
+        self.adler32 = 0
 
 
 def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
@@ -55,11 +99,11 @@ def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
     if level == Z_DEFAULT_COMPRESSION:
         level = 6
 
-    data = bytearray()
-    write_header(data, level, wbits)
-    # TODO: write compressed data
-    # TODO: write checksum
-    return data
+    zlib = Zlib()
+    zlib.setup_header(level, wbits)
+    zlib.compress(data)
+
+    return zlib
 
 
 def main():
@@ -77,7 +121,8 @@ def main():
         b_written = f_out.write(zlib.compress(data, level=Z_NO_COMPRESSION))
         print(f"wrote {b_written} bytes to {path_refout}")
     with open(path_out, "wb") as f_out:
-        b_written = f_out.write(compress(data, Z_NO_COMPRESSION))
+        z = compress(data, Z_NO_COMPRESSION)
+        b_written = f_out.write(bytes(z))
         print(f"wrote {b_written} bytes to {path_out}")
 
 
