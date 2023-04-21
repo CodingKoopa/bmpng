@@ -22,8 +22,8 @@ def main_loop():
         print("bits per pixel = " + str(bmp.getBPP()))
         print("compression method = " + str(bmp.getCompression()))
         print("image size = " + str(bmp.getImgSize()) + " bytes")
-        print("horizonal resolution = " + str(bmp.getHorizontalRes()) + " pixels per meter")
-        print("vertical resolution = " + str(bmp.getVerticalRes()) + " pixels per meter")
+        print("horizonal resolution = " + str(bmp.getHorizontalRes()) + " ppm")
+        print("vertical resolution = " + str(bmp.getVerticalRes()) + " ppm")
         print("colors in palette = " + str(bmp.getPalatte()))
         print("important colors = " + str(bmp.getImportantColors()))
         while True:
