@@ -14,13 +14,11 @@ MIN_WBITS = 9
 MAX_WBITS = 15
 
 
-# Corresponds with CM.
 class CompressionMethod(IntEnum):
     DEFLATE = 8
     RESERVED = 15
 
 
-# Corresponds with FLEVEL.
 class CompressionLevel(IntEnum):
     FASTEST = 0
     FAST = 1
