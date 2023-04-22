@@ -34,7 +34,6 @@ class Zlib:
         wbits: int = None
         fdict: bool = None
         flevel: CompressionLevel = None
-
         FMT = "!BB"
 
         def __init__(self, data=None, offset=0):
