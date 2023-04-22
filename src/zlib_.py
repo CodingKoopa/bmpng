@@ -91,9 +91,12 @@ class Zlib:
         self.header.fdict = False
 
     def _compress(self, uncompressed_data):
+        import zlib
+
         # TODO
         self.compressed_data = uncompressed_data
-        self.adler32 = 0
+        # TODO: compute this ourselves, remove zlib dep
+        self.adler32 = zlib.adler32(self.compressed_data)
 
     def _decompress(self):
         # TODO return DECOMPRESSED data
