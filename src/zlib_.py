@@ -63,18 +63,13 @@ class Zlib:
 
     # Utilities for parsing a zlib container:
 
-    @classmethod
-    def from_data(data):
-        # TODO: read header, store COMPRESSED data
-        pass
-
-    def decompress_data(self):
+    def _decompress_data(self):
         # TODO return DECOMPRESSED data
         return self.compressed_data
 
     # Utilities for creating a zlib container:
 
-    def setup_header(self, level, wbits):
+    def _setup_header(self, level, wbits):
         self.header = Zlib.Header()
         self.header.cm = CompressionMethod.DEFLATE
         self.header.wbits = wbits
@@ -82,7 +77,7 @@ class Zlib:
         self.header.flevel = CompressionLevel.FASTEST
         self.header.fdict = False
 
-    def compress(self, uncompressed_data):
+    def _compress(self, uncompressed_data):
         # TODO
         self.compressed_data = uncompressed_data
         self.adler32 = 0
@@ -100,8 +95,8 @@ def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
         level = 6
 
     zlib = Zlib()
-    zlib.setup_header(level, wbits)
-    zlib.compress(data)
+    zlib._setup_header(level, wbits)
+    zlib._compress(data)
 
     return zlib
 
