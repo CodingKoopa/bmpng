@@ -87,7 +87,7 @@ def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
     if level < Z_DEFAULT_COMPRESSION or level > Z_BEST_COMPRESSION:
         raise ValueError(f"invalid compression level {level}")
     if wbits < 9 or wbits > MAX_WBITS:
-        raise ValueError(f"invalid wbits {wbits}")
+        raise ValueError(f"invalid window bits {wbits}")
     # TODO: implement compression
     if level != Z_NO_COMPRESSION:
         raise NotImplementedError()
