@@ -26,7 +26,7 @@ class CompressionLevel(IntEnum):
     SLOWEST = 3
 
 
-@dataclass(init=True)
+@dataclass
 class Zlib:
     @dataclass
     class Header:
