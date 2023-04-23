@@ -45,6 +45,8 @@ class Zlib:
             cinfo = cmf >> 4 & 0b1111
             self.wbits = cinfo + 8
             self.fdict = flg >> 5 & 0b1
+            if self.fdict is not False:
+                raise NotImplementedError()
             self.flevel = CompressionLevel(flg >> 6 & 0b11)
 
         def __bytes__(self):
