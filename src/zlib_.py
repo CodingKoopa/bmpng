@@ -93,7 +93,7 @@ class Zlib:
         # TODO
         self.compressed_data = uncompressed_data
         # TODO: compute this ourselves, remove zlib dep
-        self.adler32 = zlib.adler32(self.compressed_data)
+        self.adler32 = zlib.adler32(self.uncompressed_data)
 
     def _decompress(self):
         # TODO return DECOMPRESSED data
