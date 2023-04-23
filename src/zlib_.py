@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import io
 import struct
 from dataclasses import dataclass
 from enum import IntEnum
@@ -34,20 +35,22 @@ class Zlib:
         wbits: int = None
         fdict: bool = None
         flevel: CompressionLevel = None
+        dictid: int = None
         FMT = "!BB"
+        FMT_DICT = "!I"
 
-        def __init__(self, data=None, offset=0):
-            if data is None:
+        def __init__(self, f=None):
+            if f is None:
                 return
-            cmf, flg = struct.unpack_from(self.FMT, data, offset)
+            cmf, flg = struct.unpack(self.FMT, f.read(2))
             assert (flg | cmf << 8) % 31 == 0
             self.cm = CompressionMethod(cmf & 0b1111)
             cinfo = cmf >> 4 & 0b1111
             self.wbits = cinfo + 8
             self.fdict = flg >> 5 & 0b1
-            if self.fdict is not False:
-                raise NotImplementedError()
             self.flevel = CompressionLevel(flg >> 6 & 0b11)
+            if self.fdict:
+                self.dictid = struct.unpack(self.FMT_DICT, f.read(4))
 
         def __bytes__(self):
             cinfo = self.wbits - 8
@@ -60,25 +63,30 @@ class Zlib:
             fcheck = FCHECKBITS - (flg | cmf << 8) % FCHECKBITS
             flg |= fcheck
 
-            return struct.pack(self.FMT, cmf, flg)
+            data = bytearray()
+            data += struct.pack(self.FMT, cmf, flg)
+            if self.fdict:
+                data += struct.pack(self.FMT_DICT, self.dictid)
+            return bytes(data)
 
     header: Header = None
     compressed_data: bytes = None
     adler32: int = None
+    FMT_TRAILER = "!I"
 
-    def __init__(self, data=None, offset=0):
-        if data is None:
+    def __init__(self, f=None):
+        if f is None:
             return
-        self.header = self.Header(data, offset)
-        offset += struct.calcsize(self.Header.FMT)
-        self.compressed_data = data[offset:-4]
-        self.adler32 = data[-4:]
+        self.header = self.Header(f)
+        remainder = f.read()
+        self.compressed_data = remainder[:-4]
+        self.adler32 = struct.unpack(self.FMT_TRAILER, remainder[-4:])
 
     def __bytes__(self):
         data = bytearray()
         data += bytes(self.header)
         data += self.compressed_data
-        data += struct.pack("!I", self.adler32)
+        data += struct.pack(self.FMT_TRAILER, self.adler32)
         return bytes(data)
 
     def _setup_header(self, level, wbits):
@@ -89,6 +97,7 @@ class Zlib:
         self.header.flevel = CompressionLevel.FASTEST
         self.header.fdict = False
 
+    # TODO: should we have this be a file instead of a buffer?
     def _compress(self, uncompressed_data):
         import zlib
 
@@ -98,11 +107,13 @@ class Zlib:
         self.adler32 = zlib.adler32(uncompressed_data)
 
     def _decompress(self):
+        if self.header.fdict is True:
+            raise NotImplementedError()
         # TODO return DECOMPRESSED data
         return self.compressed_data
 
 
-def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
+def compress(f, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
     if level < Z_DEFAULT_COMPRESSION or level > Z_BEST_COMPRESSION:
         raise ValueError(f"invalid compression level {level}")
     if wbits < 9 or wbits > MAX_WBITS:
@@ -115,17 +126,17 @@ def compress(data, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
 
     zlib = Zlib()
     zlib._setup_header(level, wbits)
-    zlib._compress(data)
+    zlib._compress(f.read())
     print(f"Created ZLIB container: {zlib}")
     return zlib
 
 
-def decompress(data, /, wbits=MAX_WBITS):
+def decompress(f, /, wbits=MAX_WBITS):
     # TODO: support custom wbits (currently we take from the file)
     if wbits != 0:
         raise NotImplementedError()
 
-    zlib = Zlib(data)
+    zlib = Zlib(f)
     print(f"Parsed ZLIB container: {zlib}")
     return zlib._decompress()
 
@@ -140,25 +151,21 @@ def main():
     path_decout = "sample/outputdec.bin"
     path_dec2out = "sample/outputdec2.bin"
 
-    with open(path_in, "rb") as f_in:
-        data = f_in.read()
-        print(f"read {len(data)} bytes from {path_in}")
-
     # Compression:
 
-    with open(path_refout, "wb") as f_out:
-        compressed_ref = zlib.compress(data, level=Z_NO_COMPRESSION)
+    with open(path_in, "rb") as f_in, open(path_refout, "wb") as f_out:
+        compressed_ref = zlib.compress(f_in.read(), level=Z_NO_COMPRESSION)
         b_written = f_out.write(compressed_ref)
         print(f"wrote {b_written} bytes to {path_refout}")
-    with open(path_out, "wb") as f_out:
-        compressed_us = bytes(compress(data, Z_NO_COMPRESSION))
+    with open(path_in, "rb") as f_in, open(path_out, "wb") as f_out:
+        compressed_us = bytes(compress(f_in, Z_NO_COMPRESSION))
         b_written = f_out.write(compressed_us)
         print(f"wrote {b_written} bytes to {path_out}")
 
     # Decompression:
 
     with open(path_decout, "wb") as f_out:
-        decompressed_us = decompress(compressed_ref, wbits=0)
+        decompressed_us = decompress(io.BytesIO(compressed_ref), wbits=0)
         b_written = f_out.write(decompressed_us)
         print(f"wrote {b_written} bytes to {path_decout}")
     with open(path_dec2out, "wb") as f_out:
