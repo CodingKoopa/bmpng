@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import io
+import math
 import struct
+from collections import Counter
 from dataclasses import dataclass
 from enum import IntEnum
 
@@ -24,6 +26,7 @@ class CompressionLevel(IntEnum):
     FASTEST = 0
     FAST = 1
     DEFAULT = 2
+    # We regard this as uncompressed.
     SLOWEST = 3
 
 
@@ -73,6 +76,13 @@ class Zlib:
     compressed_data: bytes = None
     adler32: int = None
     FMT_TRAILER = "!I"
+    FMT_UNCOMPHEADER = "<BHH"
+
+    class BlockType(IntEnum):
+        NONE = 0b00
+        HUFFMAN_FIXED = 0b01
+        HUFFMAN_DYNAMIC = 0b10
+        RESERVED = 0b11
 
     def __init__(self, f=None):
         if f is None:
@@ -97,12 +107,38 @@ class Zlib:
         self.header.flevel = CompressionLevel.FASTEST
         self.header.fdict = False
 
-    # TODO: should we have this be a file instead of a buffer?
+    def __compress_fastest(self, uncompressed_data):
+        # Empirically observed from zlib.
+        LEN = 0b10000
+        NLEN = (~LEN) & 0b11111111_11111111
+        nblocks = math.ceil(len(uncompressed_data) / LEN)
+        self.compressed_data = bytearray()
+        for i in range(nblocks):
+            bfinal = i + 1 == nblocks
+            btype = self.BlockType.NONE
+            bheader = bfinal | btype << 1
+            self.compressed_data += struct.pack(
+                self.FMT_UNCOMPHEADER, bheader, LEN, NLEN
+            )
+            start = i * LEN
+            if bfinal:
+                self.compressed_data += uncompressed_data[start:]
+            else:
+                self.compressed_data += uncompressed_data[start : (i + 1) * LEN]
+
+    def __compress_faster(self, uncompressed_data):
+        # Compute the alphabet symbol frequencies.
+        c = Counter(uncompressed_data)
+        print(f"counts: {c}")
+
     def _compress(self, uncompressed_data):
         import zlib
 
-        # TODO
-        self.compressed_data = uncompressed_data
+        if self.header.flevel == CompressionLevel.FASTEST:
+            self.__compress_fastest(uncompressed_data)
+        else:
+            self.__compress_faster(uncompressed_data)
+
         # TODO: compute this ourselves, remove zlib dep
         self.adler32 = zlib.adler32(uncompressed_data)
 
