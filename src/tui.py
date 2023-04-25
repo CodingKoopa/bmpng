@@ -49,7 +49,7 @@ def main_loop():
             if x < 0 or y < 0:
                 print("please no negatives :(")
                 continue
-            pixel = bmp.arr[x-1][y-1]
+            pixel = bmp.arr[x - 1][y - 1]
             red = pixel[0]
             green = pixel[1]
             blue = pixel[2]
