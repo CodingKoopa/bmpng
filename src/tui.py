@@ -12,20 +12,20 @@ def main_loop():
         print("goodbye!")
         quit()
     bmp = Bmp(filename)
-    if bmp.getValid():
+    if bmp.valid:
         print("it's valid!:3")
-        print("size = " + str(bmp.getSize()) + " bytes")
-        print("pixel array starting address: " + str(bmp.getStartingAddress()))
-        print("width = " + str(bmp.getWidth()) + " pixels")
-        print("height = " + str(bmp.getHeight()) + " pixels")
-        print("color planes = " + str(bmp.getPlanes()))
-        print("bits per pixel = " + str(bmp.getBPP()))
-        print("compression method = " + str(bmp.getCompression()))
-        print("image size = " + str(bmp.getImgSize()) + " bytes")
-        print("horizonal resolution = " + str(bmp.getHorizontalRes()) + " ppm")
-        print("vertical resolution = " + str(bmp.getVerticalRes()) + " ppm")
-        print("colors in palette = " + str(bmp.getPalatte()))
-        print("important colors = " + str(bmp.getImportantColors()))
+        print("size = " + str(bmp.size) + " bytes")
+        print("pixel array starting address: " + str(bmp.startingAddress))
+        print("width = " + str(bmp.width) + " pixels")
+        print("height = " + str(bmp.height) + " pixels")
+        print("color planes = " + str(bmp.planes))
+        print("bits per pixel = " + str(bmp.bpp))
+        print("compression method = " + str(bmp.compression))
+        print("image size = " + str(bmp.imgSize) + " bytes")
+        print("horizonal resolution = " + str(bmp.horizontalRes) + " ppm")
+        print("vertical resolution = " + str(bmp.verticalRes) + " ppm")
+        print("colors in palette = " + str(bmp.palatte))
+        print("important colors = " + str(bmp.importantColors))
         while True:
             # NOTE: 1-indexed, may change later
             request = input(
@@ -43,13 +43,13 @@ def main_loop():
             if x == 0 or y == 0:
                 print("please use 1-indexing")
                 continue
-            if x > bmp.getWidth() or y > bmp.getHeight():
+            if x > bmp.width or y > bmp.height:
                 print("please give a pixel that is in range of the image")
                 continue
             if x < 0 or y < 0:
                 print("please no negatives :(")
                 continue
-            pixel = bmp.getPixel(x, y)
+            pixel = bmp.arr[x-1][y-1]
             red = pixel[0]
             green = pixel[1]
             blue = pixel[2]

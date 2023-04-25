@@ -15,47 +15,47 @@ dirname = os.path.dirname(__file__)
 class Display(ttk.Frame):
     def __init__(self, container, file):
         super().__init__(container)
-        if file.getValid():
+        if file.valid:
             Label(text="it's valid!").grid(row=0, column=0, padx=10, pady=3, sticky="w")
         else:
             Label(text="invalid bitmap").grid(
                 row=0, column=0, padx=10, pady=3, sticky="w"
             )
             pass
-        Label(text=f"file size = {file.getSize()} bytes").grid(
+        Label(text=f"file size = {file.size} bytes").grid(
             row=1, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"pixel array starting address = {file.getStartingAddress()}").grid(
+        Label(text=f"pixel array starting address = {file.startingAddress}").grid(
             row=2, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"width = {file.getWidth()} pixels").grid(
+        Label(text=f"width = {file.width} pixels").grid(
             row=3, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"height = {file.getHeight()} pixels").grid(
+        Label(text=f"height = {file.height} pixels").grid(
             row=4, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"color planes = {file.getPlanes()} ").grid(
+        Label(text=f"color planes = {file.planes} ").grid(
             row=5, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"bits per pixel = {file.getBPP()}").grid(
+        Label(text=f"bits per pixel = {file.bpp}").grid(
             row=6, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"compression method = {file.getCompression()}").grid(
+        Label(text=f"compression method = {file.compression}").grid(
             row=7, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"image size = {file.getImgSize()} bytes").grid(
+        Label(text=f"image size = {file.imgSize} bytes").grid(
             row=8, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"horizontal resolution = {file.getHorizontalRes()} ppm").grid(
+        Label(text=f"horizontal resolution = {file.horizontalRes} ppm").grid(
             row=9, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"vertical resolution = {file.getVerticalRes()} ppm").grid(
+        Label(text=f"vertical resolution = {file.verticalRes} ppm").grid(
             row=10, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"colors in palatte = {file.getPalatte()}").grid(
+        Label(text=f"colors in palatte = {file.palatte}").grid(
             row=11, column=0, padx=10, pady=3, sticky="w"
         )
-        Label(text=f"imporant colors = {file.getImportantColors()}").grid(
+        Label(text=f"imporant colors = {file.importantColors}").grid(
             row=12, column=0, padx=10, pady=3, sticky="w"
         )
 
