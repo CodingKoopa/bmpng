@@ -145,7 +145,9 @@ def main():
     # fmt: on
     bw2.flush()
     f3.seek(0)
-    bindump(f3.read())
+    f3out = f3.read()
+    bindump(f3out)
+    assert f3out == data
 
     return 0
 
