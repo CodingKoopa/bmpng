@@ -11,8 +11,7 @@
 # 0bOPAB_CDEF
 
 
-# it's-a-me,
-class BitIO:
+class BitReader:
     def __init__(self, f):
         self.f = f
         """File being read from."""
@@ -109,7 +108,7 @@ def main():
     print("Test 1: Reading bits across boundaries\nData:")
     bindump(data)
     data1 = data[:]
-    br1 = BitIO(io.BytesIO(data1))
+    br1 = BitReader(io.BytesIO(data1))
     actual1 = bytearray()
     actual1 = br1.read_bits(2)
     assert actual1[0] == 0b01
@@ -122,7 +121,7 @@ def main():
     print("Test 2: Reading bytes\nData:")
     bindump(data)
     data2 = data[:]
-    br2 = BitIO(io.BytesIO(data2))
+    br2 = BitReader(io.BytesIO(data2))
     actual2 = bytearray()
     actual2 = br2.read_bytes(2)
     assert actual2 == data
@@ -130,7 +129,7 @@ def main():
     print("Test 3: Reading bytes (alt)\nData:")
     bindump(data)
     data3 = data[:]
-    br3 = BitIO(io.BytesIO(data3))
+    br3 = BitReader(io.BytesIO(data3))
     actual3 = bytearray()
     actual3 = br3.read_byte()
     actual3 += br3.read_byte()
@@ -139,7 +138,7 @@ def main():
     print("Test 4: Reading mixed bits and bytes (alt)\nData:")
     bindump(data)
     data3 = data[:]
-    br4 = BitIO(io.BytesIO(data1))
+    br4 = BitReader(io.BytesIO(data1))
     actual4 = bytearray()
     actual4 = br4.read_bits(4)
     assert actual4[0] == 0b1001
