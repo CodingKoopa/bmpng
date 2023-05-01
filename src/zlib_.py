@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 import io
 import math
 import struct
