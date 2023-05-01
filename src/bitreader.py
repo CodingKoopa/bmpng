@@ -78,5 +78,5 @@ class BitReader:
         ret = bytearray()
         for byte in data:
             ret += self._read_byte(byte)
-        self.working_byte = data[-1]
+        self.working_byte = ret[-1]
         return ret
