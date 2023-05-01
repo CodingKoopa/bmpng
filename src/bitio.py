@@ -116,6 +116,14 @@ def main():
     assert actual1[0] == 0b11001
     actual1 = br1.read_bits(6)
 
+    print("Test 2: Reading bytes\nData:")
+    bindump(data)
+    data2 = data[:]
+    br2 = BitIO(io.BytesIO(data2))
+    actual2 = bytearray()
+    actual2 = br2.read_bytes(2)
+    assert actual2 == data
+
     return 0
 
 
