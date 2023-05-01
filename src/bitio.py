@@ -98,17 +98,16 @@ class BitIO:
         return ret
 
 
-def _bindump(data):
-    print("".join("{:#010b} ".format(x) for x in data))
-
-
-def _reading_tests():
+def main():
     import io
+
+    def bindump(data):
+        print("".join("{:#010b} ".format(x) for x in data))
 
     data = bytes([0b0011_1001, 0b1010_0111])
 
     print("Test 1: Reading bits across boundaries\nData:")
-    _bindump(data)
+    bindump(data)
     data1 = data[:]
     br1 = BitIO(io.BytesIO(data1))
     actual1 = bytearray()
@@ -121,7 +120,7 @@ def _reading_tests():
     actual1 = br1.read_bits(6)
 
     print("Test 2: Reading bytes\nData:")
-    _bindump(data)
+    bindump(data)
     data2 = data[:]
     br2 = BitIO(io.BytesIO(data2))
     actual2 = bytearray()
@@ -129,7 +128,7 @@ def _reading_tests():
     assert actual2 == data
 
     print("Test 3: Reading bytes (alt)\nData:")
-    _bindump(data)
+    bindump(data)
     data3 = data[:]
     br3 = BitIO(io.BytesIO(data3))
     actual3 = bytearray()
@@ -138,7 +137,7 @@ def _reading_tests():
     assert actual3 == data
 
     print("Test 4: Reading mixed bits and bytes (alt)\nData:")
-    _bindump(data)
+    bindump(data)
     data3 = data[:]
     br4 = BitIO(io.BytesIO(data1))
     actual4 = bytearray()
@@ -149,9 +148,6 @@ def _reading_tests():
     actual4 = br4.read_bits(4)
     assert actual4[0] == 0b1010
 
-
-def main():
-    _reading_tests()
     return 0
 
 
