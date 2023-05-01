@@ -71,7 +71,9 @@ class BitReader:
     def read_bytes(self, size):
         """Read multiple bytes from the file"""
         data = self.f.read(size)
-        if self.bit_offset == 0:
+        if self.bit_offset == 0 or not data:
+            self.working_byte = None
+            self.bit_offset = 0
             return data
         ret = bytearray()
         for byte in data:
