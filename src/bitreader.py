@@ -91,3 +91,32 @@ class BitReader:
             ret += self._read_byte(byte)
         self.working_byte = ret[-1]
         return ret
+
+
+def main():
+    import io
+
+    bindump = lambda b: print("".join("{:#010b} ".format(x) for x in b))
+
+    data = bytes([0b0011_1001, 0b1010_0111])
+
+    print("Test 1: Reading bits across boundaries\nData:")
+    bindump(data)
+    data1 = data[:]
+    br1 = BitReader(io.BytesIO(data1))
+    actual1 = bytearray()
+    actual1 = br1.read_bits(2)
+    assert actual1[0] == 0b01
+    actual1 = br1.read_bits(3)
+    assert actual1[0] == 0b110
+    actual1 = br1.read_bits(5)
+    assert actual1[0] == 0b11001
+    bindump(actual1)
+    actual1 = br1.read_bits(9)
+    bindump(actual1)
+
+    return 0
+
+
+if __name__ == "__main__":
+    exit(main())
