@@ -124,6 +124,15 @@ def main():
     actual2 = br2.read_bytes(2)
     assert actual2 == data
 
+    print("Test 3: Reading bytes (alt)\nData:")
+    bindump(data)
+    data3 = data[:]
+    br3 = BitIO(io.BytesIO(data3))
+    actual3 = bytearray()
+    actual3 = br3.read_byte()
+    actual3 += br3.read_byte()
+    assert actual3 == data
+
     return 0
 
 
