@@ -70,9 +70,8 @@ class BitWriter:
         # If we have filled the working byte, and need a new one.
         else:
             self.f.write(bytes((last_byte,)))
-            bits_needed -= bits_remaining
             self.working_byte = data >> bits_remaining
-            self.bit_offset = bits_needed
+            self.bit_offset = bits_needed - bits_remaining
 
     def _write_byte(self, next_byte):
         low_bits = self.working_byte >> self.bit_offset
@@ -93,7 +92,7 @@ class BitWriter:
             self._write_byte(byte)
 
     def write_bytes(self, data):
-        """Write multiple bytes to the file"""
+        """Write multiple bytes to the file."""
         if self.working_byte is None:
             assert self.bit_offset == 0
             self.f.write(data)
