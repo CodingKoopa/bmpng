@@ -3,13 +3,6 @@
 # Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-# consumed = 2 (GH)
-# this byte: 0bABCD_EFGH
-# next byte: 0bIJKL_MNOP
-
-# read byte:
-# 0bOPAB_CDEF
-
 
 class BitReader:
     def __init__(self, f):
