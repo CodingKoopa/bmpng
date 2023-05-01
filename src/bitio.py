@@ -11,7 +11,8 @@
 # 0bOPAB_CDEF
 
 
-class BitReader:
+# it's-a-me,
+class BitIo:
     def __init__(self, f):
         self.f = f
         """File being read from."""
