@@ -5,6 +5,15 @@
 
 
 class BitReader:
+    """Utility for reading bits from a file-like object.
+
+    The OS I/O APIs, as well as the Python wrappers for them, do not support
+    reading and writing with low granulaity. With some extra state, though,
+    we can provide a nice interface that lets us think in bits.
+
+    Reading past the end is UB (but will probably throw an exception).
+    """
+
     def __init__(self, f):
         self.f = f
         """File being read from."""
