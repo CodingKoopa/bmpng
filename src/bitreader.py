@@ -33,24 +33,35 @@ class BitReader:
             bits_needed = bits_needed % 8
         if bits_needed == 0:
             return data
-        ret = 0
-        # Read the remaining bits of the working byte if we have one.
-        if self.working_byte is not None:
-            bits_remaining = 8 - self.bit_offset
-            # The mask produced by bits_needed may be wider than
-            # the remaining bits, which is harmless. It still is necessary
-            # in the event that it's *smaller* than the remaining bits.
-            ret |= (self.working_byte >> self.bit_offset) & (2**bits_needed - 1)
-            if bits_needed <= bits_remaining:
-                self.working_byte = None
-                self.bit_offset = 0
-                data += ret
-                return data
+        last_byte = 0
+        # If we are byte-aligned, life is good (for now).
+        if self.working_byte is None:
+            self.working_byte = self.f.read(1)[0]
+            self.bit_offset = bits_needed
+            last_byte = self.working_byte & (2**self.bit_offset - 1)
+            data.append(last_byte)
+            return data
+        bits_remaining = 8 - self.bit_offset
+        # The mask produced by bits_needed may be wider than
+        # the remaining bits, which is harmless. It still is necessary
+        # in the event that it's *smaller* than the remaining bits.
+        last_byte |= (self.working_byte >> self.bit_offset) & (2**bits_needed - 1)
+        # If we did not use the whole working byte.
+        if bits_needed < bits_remaining:
+            self.bit_offset += bits_needed
+        # If we happened to end up byte-aligned.
+        elif bits_needed == bits_remaining:
+            self.working_byte = None
+            self.bit_offset = 0
+        # If we have depleted the working byte, and need a new one.
+        else:
             bits_needed -= bits_remaining
-        self.working_byte = self.f.read(1)
-        self.bit_offset = bits_needed
-        # Note the equivalence of this to the high bits when we read a byte.
-        ret |= (self.working_byte & (2**self.bit_offset - 1)) << (8 - self.bit_offset)
+            self.working_byte = self.f.read(1)[0]
+            # Note the equivalence of this to the high bits when we read a byte.
+            last_byte |= (self.working_byte & (2**bits_needed - 1)) << bits_remaining
+            self.bit_offset = bits_needed
+        data.append(last_byte)
+        return data
 
     def _read_byte(self, next_byte):
         """Read a byte from the file, assuming that the bit offset is nonzero."""
