@@ -76,10 +76,13 @@ class BitIO:
     def read_byte(self):
         """Read a byte from the file, with the potential that the bit offset
         is nonzero."""
+        ret = bytearray()
         if self.working_byte is None:
             assert self.bit_offset == 0
-            return self.f.read(1)
-        return bytes(self._read_byte(self.f.read(1)[0]))
+            ret.append(self.f.read(1)[0])
+        else:
+            ret.append(self._read_byte(self.f.read(1)[0]))
+        return ret
 
     def read_bytes(self, size):
         """Read multiple bytes from the file"""
