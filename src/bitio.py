@@ -104,7 +104,7 @@ def main():
     print("Test 1: Reading bits across boundaries\nData:")
     bindump(data)
     data1 = data[:]
-    br1 = BitReader(io.BytesIO(data1))
+    br1 = BitIo(io.BytesIO(data1))
     actual1 = bytearray()
     actual1 = br1.read_bits(2)
     assert actual1[0] == 0b01
