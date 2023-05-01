@@ -79,7 +79,7 @@ class BitIO:
         if self.working_byte is None:
             assert self.bit_offset == 0
             return self.f.read(1)
-        return self._read_byte(self.f.read(1))
+        return bytes(self._read_byte(self.f.read(1)[0]))
 
     def read_bytes(self, size):
         """Read multiple bytes from the file"""
