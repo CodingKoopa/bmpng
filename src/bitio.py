@@ -136,6 +136,18 @@ def main():
     actual3 += br3.read_byte()
     assert actual3 == data
 
+    print("Test 4: Reading mixed bits and bytes (alt)\nData:")
+    bindump(data)
+    data3 = data[:]
+    br4 = BitIO(io.BytesIO(data1))
+    actual4 = bytearray()
+    actual4 = br4.read_bits(4)
+    assert actual4[0] == 0b1001
+    actual4 = br4.read_byte()
+    assert actual4[0] == 0b0111_0011
+    actual4 = br4.read_bits(4)
+    assert actual4[0] == 0b1010
+
     return 0
 
 
