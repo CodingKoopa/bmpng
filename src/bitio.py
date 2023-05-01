@@ -74,7 +74,8 @@ class BitIO:
         return low_bits | high_bits
 
     def read_byte(self):
-        """Read a byte from the file, with the potential that the bit offset is nonzero."""
+        """Read a byte from the file, with the potential that the bit offset
+        is nonzero."""
         if self.working_byte is None:
             assert self.bit_offset == 0
             return self.f.read(1)
@@ -97,7 +98,8 @@ class BitIO:
 def main():
     import io
 
-    bindump = lambda b: print("".join("{:#010b} ".format(x) for x in b))
+    def bindump(data):
+        print("".join("{:#010b} ".format(x) for x in data))
 
     data = bytes([0b0011_1001, 0b1010_0111])
 
