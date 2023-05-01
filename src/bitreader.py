@@ -111,9 +111,7 @@ def main():
     assert actual1[0] == 0b110
     actual1 = br1.read_bits(5)
     assert actual1[0] == 0b11001
-    bindump(actual1)
-    actual1 = br1.read_bits(9)
-    bindump(actual1)
+    actual1 = br1.read_bits(6)
 
     return 0
 
