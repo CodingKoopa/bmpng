@@ -33,6 +33,13 @@ class HuffmanTree:
                 self.right = HuffmanTree()
             self.right.add_code(code, code_len, symbol)
 
+    def add_alphabet(self, alphabet):
+        for code_group in alphabet:
+            symbol = code_group.symbol_base
+            for code in code_group.codes:
+                self.add_code(code, code_group.code_len, symbol)
+                symbol += 1
+
     def dump_dot(self, depth=0):
         if self.symbol:
             try:
@@ -117,11 +124,8 @@ def test_deflate(dump_dot=False):
         CodeSpec(0, 8, range(0b0011_0000, 0b1011_1111)),
         CodeSpec(144, 9, range(0b110010000, 0b111111111)),
     ]
-    for code_group in fixed_alphabet:
-        symbol = code_group.symbol_base
-        for code in code_group.codes:
-            deflate_ht.add_code(code, code_group.code_len, symbol)
-            symbol += 1
+    deflate_ht.add_alphabet(fixed_alphabet)
+
     if dump_dot:
         print("strict graph {")
         print('\tnode [fontname="Arial",shape=box];')
