@@ -7,6 +7,11 @@ from collections import namedtuple
 import math
 
 CodeSpec = namedtuple("CodeSpec", ["symbol_base", "code_len", "codes"])
+"""Specification of one or more codes with contiguous symbols.
+
+symbol_base is the value of the first symbol.
+code_len is the length of each code.
+codes is an iterable object containing the codes to assign."""
 
 
 class HuffmanTree:
