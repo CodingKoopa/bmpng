@@ -6,6 +6,8 @@
 from collections import namedtuple
 import math
 
+CodeSpec = namedtuple("CodeSpec", ["symbol_base", "code_len", "codes"])
+
 
 class HuffmanTree:
     """Implementation of a binary tree for storing Huffman Codes."""
@@ -111,14 +113,11 @@ def binary_package_merge(largest_denomination, limit, coins):
 
 def test_deflate(dump_dot=False):
     deflate_ht = HuffmanTree()
-    CodeSpec = namedtuple("CodeSpec", ["symbol_base", "code_len", "codes"])
-    code_spec = [
+    fixed_alphabet = [
         CodeSpec(0, 8, range(0b0011_0000, 0b1011_1111)),
         CodeSpec(144, 9, range(0b110010000, 0b111111111)),
-        CodeSpec(256, 7, range(0b000_0000, 0b001_0111)),
-        CodeSpec(280, 8, range(0b1100_0000, 0b1100_0111)),
     ]
-    for code_group in code_spec:
+    for code_group in fixed_alphabet:
         symbol = code_group.symbol_base
         for code in code_group.codes:
             deflate_ht.add_code(code, code_group.code_len, symbol)
