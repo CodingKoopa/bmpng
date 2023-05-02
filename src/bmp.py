@@ -68,7 +68,7 @@ class Bmp:
             data += struct.pack("<I", 40) + struct.pack(
                 self.FMT,
                 self.width,
-                self.height, 
+                self.height,
                 self.planes,
                 self.bpp,
                 self.compression,
@@ -88,26 +88,22 @@ class Bmp:
         image = in_file.read()
         in_file.close()
         if self.dib.bpp != 24:
-            print(
+            raise ValueError(
                 "only 24 bits per pixel currently supported, "
                 + "will not create pixel array"
             )
-            return
         if self.dib.compression == 4:
-            print(
+            raise ValueError(
                 "that...that's a jpeg. you took a jpeg and gave it a bmp header. "
                 + "go sit in the corner and think about what you've done."
             )
-            return
         if self.dib.compression == 5:
-            print(
+            raise ValueError(
                 "that...that's a png. you took a png and gave it a bmp header."
                 + "go sit in the corner and think about what you've done."
             )
-            return
         if self.dib.compression != 0:
-            print("this program only works for uncompressed bitmaps")
-            return
+            raise ValueError("this program only works for uncompressed bitmaps")
         # now stores pixels as [x][y] from top to bottom
         self.arr = []
         for x in range(self.dib.width):
@@ -125,14 +121,16 @@ class Bmp:
                     int(image[row + (x * 3) + 1]),
                     int(image[row + (x * 3)]),
                 )
-    
+
     def __bytes__(self):
         data = bytearray()
         data += bytes(self.header)
         data += bytes(self.dib)
-        padding = "x" *((self.dib.width * 3) % 4)
+        padding = "x" * ((self.dib.width * 3) % 4)
         for y in reversed(range(self.dib.width)):
             for x in range(self.dib.height):
-                data += struct.pack("<BBB", self.arr[x][y][2], self.arr[x][y][1], self.arr[x][y][0])
+                data += struct.pack(
+                    "<BBB", self.arr[x][y][2], self.arr[x][y][1], self.arr[x][y][0]
+                )
             data += struct.pack(padding)
         return data
