@@ -12,20 +12,20 @@ def main_loop():
         print("goodbye!")
         quit()
     bmp = Bmp(filename)
-    if bmp.valid:
+    if bmp.header.valid:
         print("it's valid!:3")
-        print("size = " + str(bmp.size) + " bytes")
-        print("pixel array starting address: " + str(bmp.startingAddress))
-        print("width = " + str(bmp.width) + " pixels")
-        print("height = " + str(bmp.height) + " pixels")
-        print("color planes = " + str(bmp.planes))
-        print("bits per pixel = " + str(bmp.bpp))
-        print("compression method = " + str(bmp.compression))
-        print("image size = " + str(bmp.imgSize) + " bytes")
-        print("horizonal resolution = " + str(bmp.horizontalRes) + " ppm")
-        print("vertical resolution = " + str(bmp.verticalRes) + " ppm")
-        print("colors in palette = " + str(bmp.palatte))
-        print("important colors = " + str(bmp.importantColors))
+        print("size = " + str(bmp.header.size) + " bytes")
+        print("pixel array starting address: " + str(bmp.header.offset))
+        print("width = " + str(bmp.dib.width) + " pixels")
+        print("height = " + str(bmp.dib.height) + " pixels")
+        print("color planes = " + str(bmp.dib.planes))
+        print("bits per pixel = " + str(bmp.dib.bpp))
+        print("compression method = " + str(bmp.dib.compression))
+        print("image size = " + str(bmp.dib.img_size) + " bytes")
+        print("horizonal resolution = " + str(bmp.dib.h_res) + " ppm")
+        print("vertical resolution = " + str(bmp.dib.v_res) + " ppm")
+        print("colors in palette = " + str(bmp.dib.palette))
+        print("important colors = " + str(bmp.dib.important_colors))
         while True:
             # NOTE: 1-indexed, may change later
             request = input(
@@ -43,7 +43,7 @@ def main_loop():
             if x == 0 or y == 0:
                 print("please use 1-indexing")
                 continue
-            if x > bmp.width or y > bmp.height:
+            if x > bmp.dib.width or y > bmp.dib.height:
                 print("please give a pixel that is in range of the image")
                 continue
             if x < 0 or y < 0:
