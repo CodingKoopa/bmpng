@@ -63,6 +63,23 @@ class Bmp:
                 self.important_colors,
             ) = struct.unpack(self.FMT, data.read(self.dib_size - 4))
 
+        def __bytes__(self):
+            data = bytearray()
+            data += struct.pack("<I", 40) + struct.pack(
+                self.FMT,
+                self.width,
+                self.height, 
+                self.planes,
+                self.bpp,
+                self.compression,
+                self.img_size,
+                self.h_res,
+                self.v_res,
+                self.palette,
+                self.important_colors,
+            )
+            return bytes(data)
+
     def __init__(self, filename):
         in_file = open(filename, "rb")
         self.header = self.Header(in_file)
@@ -108,3 +125,9 @@ class Bmp:
                     int(image[row + (x * 3) + 1]),
                     int(image[row + (x * 3)]),
                 )
+    
+    def __bytes__(self):
+        data = bytearray()
+        data += bytes(self.header)
+        data += bytes(self.dib)
+        return bytes(data)
