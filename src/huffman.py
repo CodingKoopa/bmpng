@@ -31,6 +31,39 @@ class HuffmanTree:
                 self.right = HuffmanTree()
             self.right.add_code(code, code_len, symbol)
 
+    def dump_dot(self, depth=0):
+        if self.symbol:
+            try:
+                sym = chr(self.symbol)
+                if not sym.isprintable():
+                    raise ValueError()
+                label = f"{hex(self.symbol)} (\{sym})"
+            except ValueError:
+                label = str(hex(self.symbol))
+            print(f'\t{hash(self)} [label="{label}",fontsize="18pt"]')
+        else:
+            print(
+                f'\t{hash(self)} [label={depth},fontsize="16pt"'
+                "style=filled,fontcolor=white,fillcolor=cornflowerblue];"
+            )
+
+        rank = "\t{rank=same;"
+        if self.left:
+            rank += f" {hash(self.left)};"
+            print(f'\t{hash(self)} -- {hash(self.left)} [taillabel="0"]')
+            self.left.dump_dot(depth + 1)
+        if self.right:
+            rank += f" {hash(self.right)};"
+            print(f'\t{hash(self)} -- {hash(self.right)} [taillabel="1"]')
+            self.right.dump_dot(depth + 1)
+        rank += "}"
+        print(rank)
+
+    def __hash__(self):
+        if self.symbol == None:
+            return id(self)
+        return self.symbol
+
     def __repr__(self):
         return str(self.__dict__)
 
@@ -76,7 +109,35 @@ def binary_package_merge(largest_denomination, limit, coins):
     return denom_dict
 
 
+def test_deflate(dump_dot=False):
+    deflate_ht = HuffmanTree()
+    CodeSpec = namedtuple("CodeSpec", ["symbol_base", "code_len", "codes"])
+    code_spec = [
+        CodeSpec(0, 8, range(0b0011_0000, 0b1011_1111)),
+        CodeSpec(144, 9, range(0b110010000, 0b111111111)),
+        CodeSpec(256, 7, range(0b000_0000, 0b001_0111)),
+        CodeSpec(280, 8, range(0b1100_0000, 0b1100_0111)),
+    ]
+    for code_group in code_spec:
+        symbol = code_group.symbol_base
+        for code in code_group.codes:
+            deflate_ht.add_code(code, code_group.code_len, symbol)
+            symbol += 1
+    if dump_dot:
+        print("strict graph {")
+        print('\tnode [fontname="Arial",shape=box];')
+        print('\tedge [fontname="Arial",fontsize="18pt",shape=box];')
+        deflate_ht.dump_dot()
+        print("}")
+
+
 def main():
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "-d":
+        test_deflate(True)
+        return
+
     print("Test binary package merge:")
     coins = [
         Coin(1, 20),
@@ -94,6 +155,9 @@ def main():
     ht.add_code(0b001, 3, "b")
     ht.add_code(0b000, 3, "a")
     print(ht)
+
+    print("Test Fixed DEFLATE Huffman Tree:")
+    test_deflate()
 
 
 if __name__ == "__main__":
