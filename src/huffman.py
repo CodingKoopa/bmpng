@@ -6,6 +6,35 @@
 from collections import namedtuple
 import math
 
+
+class HuffmanTree:
+    """Implementation of a binary tree for storing Huffman Codes."""
+
+    def __init__(self, /):
+        self.left = None
+        self.right = None
+        self.symbol = None
+
+    def add_code(self, code, code_len, symbol):
+        if code_len == 0:
+            self.symbol = symbol
+            return
+        code_len -= 1
+        direction = code >> code_len
+        code = code & (2**code_len - 1)
+        if direction == 0:
+            if not self.left:
+                self.left = HuffmanTree()
+            self.left.add_code(code, code_len, symbol)
+        else:
+            if not self.right:
+                self.right = HuffmanTree()
+            self.right.add_code(code, code_len, symbol)
+
+    def __repr__(self):
+        return str(self.__dict__)
+
+
 Coin = namedtuple("Coin", ["denomination", "numismatic_value"])
 
 
@@ -44,10 +73,11 @@ def binary_package_merge(largest_denomination, limit, coins):
         while len(coins) > 1:
             denom_list[idx + 1].append([coins.pop(0), coins.pop(0)])
         denom_list[idx + 1].sort(key=key_coin)
-    print(denom_dict)
+    return denom_dict
 
 
 def main():
+    print("Test binary package merge:")
     coins = [
         Coin(1, 20),
         Coin(0.5, 2),
@@ -56,7 +86,14 @@ def main():
         Coin(0.5, 1),
         Coin(0.5, 30),
     ]
-    binary_package_merge(1, 1, coins)
+    print(binary_package_merge(1, 1, coins))
+
+    print("Test Huffman Tree:")
+    ht = HuffmanTree()
+    ht.add_code(0b1, 1, "c")
+    ht.add_code(0b001, 3, "b")
+    ht.add_code(0b000, 3, "a")
+    print(ht)
 
 
 if __name__ == "__main__":
