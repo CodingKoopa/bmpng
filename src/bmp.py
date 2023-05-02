@@ -29,7 +29,7 @@ class Bmp:
         def __bytes__(self):
             data = bytearray()
             data += struct.pack(self.FMT, self.MAGIC, self.size, self.offset)
-            return bytes(data)
+            return data
 
     @dataclass
     class Dib:
@@ -78,7 +78,7 @@ class Bmp:
                 self.palette,
                 self.important_colors,
             )
-            return bytes(data)
+            return data
 
     def __init__(self, filename):
         in_file = open(filename, "rb")
@@ -130,4 +130,9 @@ class Bmp:
         data = bytearray()
         data += bytes(self.header)
         data += bytes(self.dib)
-        return bytes(data)
+        padding = "x" *((self.dib.width * 3) % 4)
+        for y in reversed(range(self.dib.width)):
+            for x in range(self.dib.height):
+                data += struct.pack("<BBB", self.arr[x][y][2], self.arr[x][y][1], self.arr[x][y][0])
+            data += struct.pack(padding)
+        return data

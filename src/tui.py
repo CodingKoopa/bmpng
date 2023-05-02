@@ -13,6 +13,9 @@ def main_loop():
         quit()
     bmp = Bmp(filename)
     if bmp.header.valid:
+        # output = open("output_test.bmp", "wb")
+        # output.write(bytes(bmp))
+        # output.close()
         print("it's valid!:3")
         print("size = " + str(bmp.header.size) + " bytes")
         print("pixel array starting address: " + str(bmp.header.offset))
