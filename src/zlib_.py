@@ -9,6 +9,8 @@ import struct
 from collections import Counter
 from dataclasses import dataclass
 from enum import IntEnum
+import deflate
+from bitwriter import BitWriter
 
 # zlib container RFC: https://www.rfc-editor.org/rfc/rfc1950
 
@@ -133,18 +135,40 @@ class Zlib:
             else:
                 self.compressed_data += uncompressed_data[start : (i + 1) * LEN]
 
-    def __compress_faster(self, uncompressed_data):
+    def __compress_huffmanfixed(self, uncompressed_data):
+        """Copy the data using the fixed Huffman codes, all in one block."""
+        buf = io.BytesIO()
+        bw = BitWriter(buf)
+        deflate_fixed = deflate.Deflate(deflate.fixed_ht, bw)
+        bw.write_bits(True, 1)
+        bw.write_bits(self.BlockType.HUFFMAN_FIXED, 2)
+        for byte in uncompressed_data:
+            deflate_fixed.write_symbol(byte)
+        deflate_fixed.write_end()
+        bw.flush()
+        buf.seek(0)
+
+        def bindump(data):
+            print("".join("{:#010b} ".format(x) for x in data))
+
+        bindump(buf.getvalue())
+        buf.seek(0)
+        self.compressed_data = buf.getvalue()
+
+    def __compress_slow(self, uncompressed_data):
+        """Copy the data using the dynamic Huffman codes, all in one block."""
+        # TODO: Use dynamic compression
         # Compute the alphabet symbol frequencies.
         c = Counter(uncompressed_data)
-        print(f"counts: {c}")
+        print(c)
 
     def _compress(self, uncompressed_data):
         import zlib
 
         if self.header.flevel == CompressionLevel.FASTEST:
-            self.__compress_fastest(uncompressed_data)
+            self.__compress_nocompression(uncompressed_data)
         else:
-            self.__compress_faster(uncompressed_data)
+            self.__compress_huffmanfixed(uncompressed_data)
 
         # TODO: compute this ourselves, remove zlib dep
         self.adler32 = zlib.adler32(uncompressed_data)
