@@ -130,4 +130,7 @@ class Bmp:
                     "<BBB", self.arr[x][y][2], self.arr[x][y][1], self.arr[x][y][0]
                 )
             data += struct.pack(padding)
+        extra = self.header.size - len(data)
+        if extra > 0:
+            data += struct.pack("x"*extra)
         return bytes(data)
