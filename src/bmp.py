@@ -14,7 +14,7 @@ class Bmp:
         valid: bool = None
         size: int = None
         offset: int = None
-        MAGIC = 19778
+        MAGIC = int("0x4D42", 16)
         FMT = "<HIxxxxI"
 
         def __init__(self, data=None):
@@ -22,14 +22,11 @@ class Bmp:
                 return
             valid, self.size, self.offset = struct.unpack(self.FMT, data.read(14))
             self.valid = valid == self.MAGIC
-            # self.valid = data.startswith(b"\x42\x4d")
-            # self.size = struct.unpack("<I", data[2:6])
-            # self.offset = struct.unpack("<I", data[10:])
 
         def __bytes__(self):
             data = bytearray()
             data += struct.pack(self.FMT, self.MAGIC, self.size, self.offset)
-            return data
+            return bytes(data)
 
     @dataclass
     class Dib:
@@ -78,7 +75,7 @@ class Bmp:
                 self.palette,
                 self.important_colors,
             )
-            return data
+            return bytes(data)
 
     def __init__(self, filename):
         in_file = open(filename, "rb")
@@ -133,4 +130,4 @@ class Bmp:
                     "<BBB", self.arr[x][y][2], self.arr[x][y][1], self.arr[x][y][0]
                 )
             data += struct.pack(padding)
-        return data
+        return bytes(data)
