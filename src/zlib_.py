@@ -124,16 +124,21 @@ class Zlib:
         self.compressed_data = bytearray()
         for i in range(nblocks):
             bfinal = i + 1 == nblocks
+            start = i * LEN
+            if bfinal:
+                LEN = len(uncompressed_data) - start
+                NLEN = (~LEN) & 0b11111111_11111111
             btype = self.BlockType.NONE
             bheader = bfinal | btype << 1
             self.compressed_data += struct.pack(
                 self.FMT_UNCOMPHEADER, bheader, LEN, NLEN
             )
-            start = i * LEN
             if bfinal:
-                self.compressed_data += uncompressed_data[start:]
+                bdata = uncompressed_data[start:]
             else:
-                self.compressed_data += uncompressed_data[start : (i + 1) * LEN]
+                bdata = uncompressed_data[start : (i + 1) * LEN]
+            assert len(bdata) == LEN
+            self.compressed_data += bdata
 
     def __compress_huffmanfixed(self, uncompressed_data):
         """Copy the data using the fixed Huffman codes, all in one block."""
