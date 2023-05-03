@@ -14,8 +14,8 @@ class Bmp:
         valid: bool = None
         size: int = None
         offset: int = None
-        MAGIC = int("0x4D42", 16)
-        FMT = "<HIxxxxI"
+        MAGIC = b"BM"
+        FMT = "<2sIxxxxI"
 
         def __init__(self, data=None):
             if data is None:
