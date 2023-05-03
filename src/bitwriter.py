@@ -99,7 +99,6 @@ class BitWriter:
             return
         for byte in data:
             self._write_byte(byte)
-        self.working_byte = data[-1]
 
 
 def main():
