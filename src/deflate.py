@@ -47,7 +47,7 @@ fixed_alphabet = [
     CodeSpec(144, 9, range(0b110010000, 0b111111111)),
 ]
 length_alphabet = [
-    # Stop code 0xFF, lengths 0x100 to 0x117.
+    # Stop code 0x100, lengths 0x101 to 0x117.
     CodeSpec(256, 7, range(0b000_0000, 0b001_0111)),
     # Lengths 0x118 to 0x11F.
     CodeSpec(280, 8, range(0b1100_0000, 0b1100_0111)),
