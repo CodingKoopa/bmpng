@@ -6,6 +6,8 @@
 from collections import namedtuple
 from huffman import HuffmanTree, CodeSpec
 import copy
+from bitwriter import BitWriter
+from bitreader import BitReader
 
 LengthSymbolInfo = namedtuple("LengthSymbolInfo", ["num_extra_bits", "base"])
 """Associates information with a length symbol.
@@ -58,6 +60,22 @@ base_ht = HuffmanTree()
 base_ht.add_alphabet(length_alphabet)
 fixed_ht = copy.deepcopy(base_ht)
 fixed_ht.add_alphabet(fixed_alphabet)
+
+
+class Deflate:
+    def __init__(self, ht: HuffmanTree, /, bw: BitWriter = None, br: BitReader = None):
+        self.ht = ht
+        self.bw = bw
+        self.br = br
+
+    def write_symbol(self, symbol):
+        code, code_len = self.ht.map[symbol]
+        # Huffman codes in DEFLATE are written MSB first.
+        code_rev = int(f"{code:0{code_len}b}"[::-1], 2)
+        self.bw.write_bits(code_rev, code_len)
+
+    def write_end(self):
+        self.write_symbol(0x100)
 
 
 def main():
