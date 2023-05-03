@@ -215,6 +215,8 @@ def main():
     import zlib
 
     path_in = "sample/input.txt"
+    if len(sys.argv) > 1:
+        path_in = sys.argv[1]
     path_refout = "sample/output.reference.bin"
     path_out = "sample/output.bin"
     path_decout = "sample/outputdec.bin"
