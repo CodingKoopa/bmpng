@@ -106,11 +106,15 @@ class Zlib:
         self.header = self.Header()
         self.header.cm = CompressionMethod.DEFLATE
         self.header.wbits = wbits
-        # TODO: adjust according to level
-        self.header.flevel = CompressionLevel.FASTEST
+        # TODO: Refine the mapping from level [0, 9] to CompressionLevel [0, 3].
+        if level == Z_NO_COMPRESSION:
+            self.header.flevel = CompressionLevel.FASTEST
+        else:
+            self.header.flevel = CompressionLevel.DEFAULT
         self.header.fdict = False
 
-    def __compress_fastest(self, uncompressed_data):
+    def __compress_nocompression(self, uncompressed_data):
+        """Copy the data with no compression."""
         # Empirically observed from zlib.
         LEN = 0b10000
         NLEN = (~LEN) & 0b11111111_11111111
@@ -157,9 +161,6 @@ def compress(f, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
         raise ValueError(f"invalid compression level {level}")
     if wbits < 9 or wbits > MAX_WBITS:
         raise ValueError(f"invalid window bits {wbits}")
-    # TODO: implement compression
-    if level != Z_NO_COMPRESSION:
-        raise NotImplementedError()
     if level == Z_DEFAULT_COMPRESSION:
         level = 6
 
@@ -193,11 +194,11 @@ def main():
     # Compression:
 
     with open(path_in, "rb") as f_in, open(path_refout, "wb") as f_out:
-        compressed_ref = zlib.compress(f_in.read(), level=Z_NO_COMPRESSION)
+        compressed_ref = zlib.compress(f_in.read(), level=Z_DEFAULT_COMPRESSION)
         b_written = f_out.write(compressed_ref)
         print(f"wrote {b_written} bytes to {path_refout}")
     with open(path_in, "rb") as f_in, open(path_out, "wb") as f_out:
-        compressed_us = bytes(compress(f_in, Z_NO_COMPRESSION))
+        compressed_us = bytes(compress(f_in, Z_DEFAULT_COMPRESSION))
         b_written = f_out.write(compressed_us)
         print(f"wrote {b_written} bytes to {path_out}")
 
