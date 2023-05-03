@@ -17,12 +17,17 @@ codes is an iterable object containing the codes to assign."""
 class HuffmanTree:
     """Implementation of a binary tree for storing Huffman Codes."""
 
-    def __init__(self, /):
+    def __init__(self, is_child=False):
         self.left = None
         self.right = None
         self.symbol = None
+        if not is_child:
+            self.map = {}
+            """Mapping of symbols to codes.
+            
+            This is the inverse of what we use the binary tree for."""
 
-    def add_code(self, code, code_len, symbol):
+    def _add_code(self, code, code_len, symbol):
         if code_len == 0:
             self.symbol = symbol
             return
@@ -31,12 +36,17 @@ class HuffmanTree:
         code = code & (2**code_len - 1)
         if direction == 0:
             if not self.left:
-                self.left = HuffmanTree()
-            self.left.add_code(code, code_len, symbol)
+                self.left = HuffmanTree(True)
+            self.left._add_code(code, code_len, symbol)
         else:
             if not self.right:
-                self.right = HuffmanTree()
-            self.right.add_code(code, code_len, symbol)
+                self.right = HuffmanTree(True)
+            self.right._add_code(code, code_len, symbol)
+
+    def add_code(self, code, code_len, symbol):
+        # We only need this mapping in the root.
+        self.map[symbol] = (code, code_len)
+        self._add_code(code, code_len, symbol)
 
     def add_alphabet(self, alphabet):
         for code_group in alphabet:
