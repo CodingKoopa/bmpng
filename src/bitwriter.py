@@ -75,11 +75,9 @@ class BitWriter:
             self.bit_offset = bits_needed - bits_remaining
 
     def _write_byte(self, next_byte):
-        low_bits = self.working_byte >> self.bit_offset
-        self.working_byte = next_byte
-        high_bits = (self.working_byte & (2**self.bit_offset - 1)) << (
-            8 - self.bit_offset
-        )
+        low_bits = self.working_byte
+        high_bits = (next_byte & (2 ** (8 - self.bit_offset) - 1)) << (self.bit_offset)
+        self.working_byte = next_byte >> (8 - self.bit_offset)
         self.f.write(bytes((low_bits | high_bits,)))
 
     def write_byte(self, byte):
