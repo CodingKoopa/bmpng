@@ -37,8 +37,9 @@ class BitWriter:
     def write_bits(self, data, bits_needed):
         """Write bits to the file.
 
-        data should be bytes-like.
         bits_needed is the number of bits left to write."""
+        if type(data) != bytes:
+            data = bytes((data,))
         if bits_needed % 8 == 0:
             self.write_bytes(data)
             return
