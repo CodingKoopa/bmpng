@@ -42,15 +42,15 @@ def _make_lai():
 
 fixed_alphabet = [
     # Literals 0x00 to 0x8F.
-    CodeSpec(0, 8, range(0b0011_0000, 0b1011_1111)),
+    CodeSpec(0, 8, range(0b0011_0000, 0b1011_1111 + 1)),
     # Literals 0x90 to 0xFF.
-    CodeSpec(144, 9, range(0b110010000, 0b111111111)),
+    CodeSpec(144, 9, range(0b110010000, 0b111111111 + 1)),
 ]
 length_alphabet = [
     # Stop code 0x100, lengths 0x101 to 0x117.
-    CodeSpec(256, 7, range(0b000_0000, 0b001_0111)),
+    CodeSpec(256, 7, range(0b000_0000, 0b001_0111 + 1)),
     # Lengths 0x118 to 0x11F.
-    CodeSpec(280, 8, range(0b1100_0000, 0b1100_0111)),
+    CodeSpec(280, 8, range(0b1100_0000, 0b1100_0111 + 1)),
 ]
 length_alphabet_info = _make_lai()
 
