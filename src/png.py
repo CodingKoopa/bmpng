@@ -76,6 +76,7 @@ class Png:
                 self.chunks.append(self.Chunk.make_chunk(in_file))
                 if self.chunks[-1].type == b"IEND":
                     break
+        in_file.close()
 
 if __name__ == "__main__":
     png = Png("sample/bulbasaur.png")
