@@ -185,7 +185,7 @@ def main():
     import sys
     import zlib
 
-    path_in = sys.argv[1]
+    path_in = "sample/input.txt"
     path_refout = "sample/output.reference.bin"
     path_out = "sample/output.bin"
     path_decout = "sample/outputdec.bin"
