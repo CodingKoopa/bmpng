@@ -5,9 +5,6 @@
 
 
 class SlidingWindow:
-    BUFFER_SIZE = 8 * 2**10
-    MIN_MATCH = 3
-
     def __init__(self, f, wsize=32 * 2**10):
         self.data = f.read()
         """The entire file contents."""
