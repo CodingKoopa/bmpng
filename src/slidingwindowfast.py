@@ -20,26 +20,25 @@ class SlidingWindow:
         
         Relative to the base index,."""
 
-    def process_bytes(self, n, outf):
+    def process_bytes(self, n):
         if self.wbaseidx + self.idx >= len(self.data):
-            return False
-        # <do thing with byte>
-        outf.write(self.data[self.wbaseidx + self.idx : self.wbaseidx + self.idx + n])
+            return None
+        ret = self.data[self.wbaseidx + self.idx : self.wbaseidx + self.idx + n]
         # Move the index towards the middle before advancing the window.
         if self.idx <= self.wsize // 2:
             self.idx += n
         else:
             self.wbaseidx += n
-        return True
+        return ret
 
 
 def main():
-    with open("sample/deflate_fixed.png", "rb") as f, open("a", "wb") as outf:
+    with open("sample/deflate_fixed.png", "rb") as f, open(
+        "sample/deflate_fixed_copy.png", "wb"
+    ) as outf:
         sw = SlidingWindow(f)
-        # print(f"Initialized with {len(sw.deque)}")
-        while True:
-            if sw.process_bytes(sw.MIN_MATCH, outf) == False:
-                break
+        while new_data := sw.process_bytes(sw.MIN_MATCH):
+            outf.write(new_data)
 
 
 if __name__ == "__main__":
