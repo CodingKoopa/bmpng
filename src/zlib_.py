@@ -117,8 +117,7 @@ class Zlib:
 
     def __compress_nocompression(self, uncompressed_data):
         """Copy the data with no compression."""
-        # Empirically observed from zlib.
-        LEN = 0b10000
+        LEN = min(0b1111_1111, len(uncompressed_data))
         NLEN = (~LEN) & 0b11111111_11111111
         nblocks = math.ceil(len(uncompressed_data) / LEN)
         self.compressed_data = bytearray()
