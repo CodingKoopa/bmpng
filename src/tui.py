@@ -11,7 +11,7 @@ def main_loop():
     if filename.upper() == "EXIT":
         print("goodbye!")
         quit()
-    bmp = Bmp(filename)
+    bmp = Bmp(filename=filename)
     if bmp.header.valid:
         # output = open("output_test.bmp", "wb")
         # output.write(bytes(bmp))
@@ -32,7 +32,7 @@ def main_loop():
         while True:
             # NOTE: 1-indexed, may change later
             request = input(
-                "what pixel do you want color info on?"
+                "what pixel do you want color info on? "
                 + "please answer in the form x y (type EXIT to close program) "
             )
             if request.upper() == "EXIT":
