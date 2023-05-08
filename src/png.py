@@ -42,7 +42,6 @@ class Png:
                 case b"IHDR":
                     return Png.Ihdr(data)
                 case _:
-                    #raise ValueError(f"Unrecognized chunk: type {chunk}")
                     return cls(data)
 
     @dataclass
@@ -60,36 +59,41 @@ class Png:
                 self.filter,
                 self.interlace,
             ) = struct.unpack(self.FMT2, self.data)
-    
-    @dataclass
-    class Idat(Chunk):
-        #TODO: Handle image data here
-        def __init__(self, data=None):
-            super().__init__(data)
+
+    compressed_data = None
+    ihdr = None
+    plte = None
 
     def __init__(self, filename=None):
         in_file = open(filename, "rb")
         self.header = self.Header(in_file)
         if self.header.valid:
             self.chunks = []
-            while True:
-                self.chunks.append(self.Chunk.make_chunk(in_file))
-                if self.chunks[-1].type == b"IEND":
-                    break
+            chunk = self.Chunk.make_chunk(in_file)
+            while chunk.type != b"IEND":
+                match chunk.type:
+                    case b"IHDR":
+                        self.ihdr = chunk
+                    case b"PLTE":
+                        self.plte = chunk
+                    case b"IDAT":
+                        self.compressed_data += chunk.data
+                    case _:
+                        self.chunks.append(self.Chunk.make_chunk(in_file))
+                chunk = self.Chunk.make_chunk(in_file)
         in_file.close()
 
 if __name__ == "__main__":
-    png = Png("sample/bulbasaur.png")
+    png = Png(filename="sample/bulbasaur.png")
     if png.header.valid:
+        print(f"Image width: {png.ihdr.width} pixels")
+        print(f"Image height: {png.ihdr.height} pixels")
+        print(f"Bit depth: {png.ihdr.bit_depth} bits")
+        print(f"Color type: {png.ihdr.color_type}")
+        print(f"Compression: {png.ihdr.compression}")
+        print(f"Filter: {png.ihdr.filter}")
+        print(f"Interlace: {png.ihdr.interlace}")
         for chunk in png.chunks:
-            print(f"\nChunk length: {chunk.length} bytes")
+            print(f"Chunk length: {chunk.length} bytes")
             print(f"Chunk type: {chunk.type}")
-            if chunk.type == b"IHDR":
-                print(f"Image width: {chunk.width} pixels")
-                print(f"Image height: {chunk.height} pixels")
-                print(f"Bit depth: {chunk.bit_depth} bits")
-                print(f"Color type: {chunk.color_type}")
-                print(f"Compression: {chunk.compression}")
-                print(f"Filter: {chunk.filter}")
-                print(f"Interlace: {chunk.interlace}")
     pass
