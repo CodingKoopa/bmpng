@@ -20,7 +20,6 @@ class LzIoInterface:
 
 # TODO: document these
 MIN_MATCH = 3
-# TODO: impl
 MAX_MATCH = 258
 
 
@@ -48,6 +47,8 @@ def string_search(text, pattern):
             if text[i + j] != pattern[j]:
                 break
             curlen += 1
+            if curlen == MAX_MATCH:
+                break
         # We want to take the last (= closest) match, so allow equality.
         if curlen >= matchlen:
             matchlen = curlen
