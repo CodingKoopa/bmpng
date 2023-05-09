@@ -41,6 +41,7 @@ class BitWriter:
         """Write bits to the file.
 
         bits_needed is the number of bits left to write."""
+        # print(f"write_bits({data:0{bits_needed}b})")
         if type(data) != bytes:
             data = data.to_bytes(math.ceil(bits_needed / 8), "little")
         if bits_needed % 8 == 0:
