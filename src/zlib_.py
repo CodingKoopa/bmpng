@@ -141,45 +141,51 @@ class Zlib:
 
     def __compress_huffmanfixed(self, uncompressed_data):
         """Copy the data using the fixed Huffman codes, all in one block."""
+        import zlib
+
         buf = io.BytesIO()
         bw = BitWriter(buf)
-        deflate_fixed = deflate.Deflate(deflate.fixed_ht, bw)
+        deflate_fixed = deflate.Deflate(deflate.fixed_ht, deflate.fixed_dht, bw)
         bw.write_bits(True, 1)
         bw.write_bits(self.BlockType.HUFFMAN_FIXED, 2)
         for byte in uncompressed_data:
-            deflate_fixed.write_symbol(byte)
+            deflate_fixed.write_literal(byte)
         deflate_fixed.write_end()
         bw.flush()
-        buf.seek(0)
-
-        def bindump(data):
-            print("".join("{:#010b} ".format(x) for x in data))
-
-        bindump(buf.getvalue())
-        buf.seek(0)
         self.compressed_data = buf.getvalue()
+        self.adler32 = zlib.adler32(uncompressed_data)
 
-    def __compress_slow(self, uncompressed_data):
-        """Copy the data using the dynamic Huffman codes, all in one block."""
-        # TODO: Use dynamic compression
-        # Compute the alphabet symbol frequencies.
-        c = Counter(uncompressed_data)
-        print(c)
-
-    def _compress(self, uncompressed_data):
+    def __compress_huffmanfixed_lz(self, uncompressed_f):
+        """Copy the data using the fixed Huffman codes and LZ backreferences."""
         import zlib
 
-        if self.header.flevel == CompressionLevel.FASTEST:
-            self.__compress_nocompression(uncompressed_data)
-        else:
-            self.__compress_huffmanfixed(uncompressed_data)
+        output_buf = io.BytesIO()
+        bw = BitWriter(output_buf)
+        deflate_fixed = deflate.Deflate(deflate.fixed_llht, deflate.fixed_dht, bw)
+        bw.write_bits(True, 1)
+        bw.write_bits(self.BlockType.HUFFMAN_FIXED, 2)
+        lz77.compress(uncompressed_f, deflate_fixed, 2**self.header.wbits)
+        deflate_fixed.write_end()
+        bw.flush()
+        self.compressed_data = output_buf.getvalue()
+        # TODO: Compute this as we go (like with the frequencies)
+        uncompressed_f.seek(0)
+        self.adler32 = zlib.adler32(uncompressed_f.read())
 
-        # TODO: compute this ourselves, remove zlib dep
-        self.adler32 = zlib.adler32(uncompressed_data)
+    def __compress_slow(self, uncompressed_f):
+        """Copy the data using the dynamic Huffman codes, all in one block."""
+        pass
+
+    def _compress(self, f):
+        if self.header.flevel == CompressionLevel.FASTEST:
+            self.__compress_nocompression(f.read())
+        else:
+            self.__compress_huffmanfixed_lz(f)
 
     def _decompress(self):
         if self.header.fdict is True:
             raise NotImplementedError()
+
         # TODO return DECOMPRESSED data
         return self.compressed_data
 
@@ -194,7 +200,7 @@ def compress(f, /, level=Z_DEFAULT_COMPRESSION, wbits=MAX_WBITS):
 
     zlib = Zlib()
     zlib._setup_header(level, wbits)
-    zlib._compress(f.read())
+    zlib._compress(f)
     print(f"Created ZLIB container: {zlib}")
     return zlib
 
