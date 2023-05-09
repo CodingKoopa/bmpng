@@ -73,8 +73,8 @@ def _process_next_input(
         frequencies[lookahead_buf[cur_lookahead_idx]] += 1
         cur_lookahead_idx += 1
     else:
-        len_to_search_buf = len(lookahead_buf) - matchidx
-        lz_io.write_backref(matchlen, len_to_search_buf + cur_lookahead_idx)
+        len_to_search_buf = len(search_buf) - matchidx
+        lz_io.write_backref(len_to_search_buf + cur_lookahead_idx, matchlen)
         frequencies.update(
             lookahead_buf[cur_lookahead_idx : cur_lookahead_idx + matchlen]
         )
