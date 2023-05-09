@@ -4,6 +4,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 
+import math
+
+
 class BitWriter:
     """Utility for writing bits to a file-like object.
 
@@ -39,7 +42,7 @@ class BitWriter:
 
         bits_needed is the number of bits left to write."""
         if type(data) != bytes:
-            data = bytes((data,))
+            data = data.to_bytes(math.ceil(bits_needed / 8), "little")
         if bits_needed % 8 == 0:
             self.write_bytes(data)
             return
