@@ -140,13 +140,14 @@ class Zlib:
             assert len(bdata) == LEN
             self.compressed_data += bdata
 
-    def __compress_huffmanfixed(self, uncompressed_data):
+    def __compress_huffmanfixed(self, uncompressed_f):
         """Copy the data using the fixed Huffman codes, all in one block."""
         import zlib
 
+        uncompressed_data = uncompressed_f.read()
         buf = io.BytesIO()
         bw = BitWriter(buf)
-        deflate_fixed = deflate.Deflate(deflate.fixed_ht, deflate.fixed_dht, bw)
+        deflate_fixed = deflate.Deflate(deflate.fixed_llht, deflate.fixed_dht, bw)
         bw.write_bits(True, 1)
         bw.write_bits(self.BlockType.HUFFMAN_FIXED, 2)
         for byte in uncompressed_data:
@@ -154,6 +155,7 @@ class Zlib:
         deflate_fixed.write_end()
         bw.flush()
         self.compressed_data = buf.getvalue()
+        # TODO: Compute this as we go (like with the frequencies)
         self.adler32 = zlib.adler32(uncompressed_data)
 
     def __compress_huffmanfixed_lz(self, uncompressed_f):
