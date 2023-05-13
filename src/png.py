@@ -179,7 +179,7 @@ class Png:
         for i in range(len(array)):
             for j in range(len(array[i])):
                 self.raw_data += struct.pack(
-                    "<BBB",
+                    "!BBB",
                     array[i][j][0],
                     array[i][j][1],
                     array[i][j][2],
