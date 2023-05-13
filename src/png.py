@@ -178,9 +178,9 @@ class Png:
 
     def array_to_bytes(self, array):
         self.raw_data = bytearray()
-        for i in range(len(array)):
+        for i in range(len(array[0])):
             self.raw_data += struct.pack("x")
-            for j in range(len(array[i])):
+            for j in range(len(array)):
                 self.raw_data += struct.pack(
                     "!BBB",
                     array[j][i][0],
