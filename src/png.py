@@ -4,8 +4,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 import struct
+import io
 from dataclasses import dataclass
-
+import zlib_
 
 @dataclass
 class Png:
@@ -15,21 +16,47 @@ class Png:
         SIGNATURE = int("0x89504E470D0A1A0A", 16)
 
         def __init__(self, data=None):
-            (self.signature,) = struct.unpack(self.FMT, data.read(8))
-            self.valid = self.signature == self.SIGNATURE
-            if not self.valid:
-                raise ValueError(f"Invalid signature: {hex(self.signature)}")
+            if data is not None:
+                (self.signature,) = struct.unpack(self.FMT, data.read(8))
+                self.valid = self.signature == self.SIGNATURE
+                if not self.valid:
+                    raise ValueError(f"Invalid signature: {hex(self.signature)}")
+            else:
+                self.signature = self.SIGNATURE
+                self.valid = True
+        
+        def __bytes__(self):
+            return struct.pack(self.FMT, self.signature)
 
     @dataclass
     class Chunk:
         FMT = "!I4s"
 
-        def __init__(self, data=None):
+        # Inclusion of chunk_type signifies creation of chunk, not extraction
+        # Empty parameters signifies IEND chunk
+        def __init__(self, data=None, chunk_type=None):
             if data is None:
+                self.type = b"IEND"
+                self.length = 0
+                self.data = b""
+                self.calc_crc()
+                return
+            if chunk_type is not None:
+                self.length = len(data)
+                self.type = chunk_type
+                self.data = data
+                self.calc_crc()
                 return
             self.length, self.type = struct.unpack(self.FMT, data.read(8))
             self.data = data.read(self.length)
             self.crc = data.read(4)
+
+        def __bytes__(self):
+            data = bytearray()
+            data += struct.pack(self.FMT, self.length, self.type)
+            data += self.data
+            data += self.crc
+            return bytes(data)
 
         @classmethod
         def make_chunk(cls, data=None):
@@ -60,50 +87,106 @@ class Png:
                 crc = crc_table[(crc ^ self.type[n]) & 0xFF] ^ (crc >> 8)
             for n in range(self.length):
                 crc = crc_table[(crc ^ self.data[n]) & 0xFF] ^ (crc >> 8)
-            return crc ^ 0xFFFFFFFF
+            self.crc = struct.pack("!I", crc ^ 0xFFFFFFFF)
 
     @dataclass
     class Ihdr(Chunk):
         FMT2 = "!LL5B"
 
-        def __init__(self, data=None):
-            super().__init__(data)
-            (
-                self.width,
-                self.height,
-                self.bit_depth,
-                self.color_type,
-                self.compression,
-                self.filter,
-                self.interlace,
-            ) = struct.unpack(self.FMT2, self.data)
+        def __init__(self, data=None, width=None, height=None):
+            if data is not None:
+                super().__init__(data)
+                (
+                    self.width,
+                    self.height,
+                    self.bit_depth,
+                    self.color_type,
+                    self.compression,
+                    self.filter,
+                    self.interlace,
+                ) = struct.unpack(self.FMT2, self.data)
+            else:
+                self.length = 13
+                self.type = b"IHDR"
+                self.width = width
+                self.height = height
+                self.bit_depth = 8
+                self.color_type = 2
+                self.compression = 0
+                self.filter = 0
+                self.interlace = 0
+                self.data = struct.pack(
+                    self.FMT2,
+                    self.width,
+                    self.height,
+                    self.bit_depth,
+                    self.color_type,
+                    self.compression,
+                    self.filter,
+                    self.interlace,
+                )
 
-    compressed_data = None
+    compressed_data = b""
+    chunks = None
     ihdr = None
     plte = None
 
-    def __init__(self, filename=None):
-        in_file = open(filename, "rb")
-        self.header = self.Header(in_file)
-        if self.header.valid:
-            self.chunks = []
-            chunk = self.Chunk.make_chunk(in_file)
-            while chunk.type != b"IEND":
-                match chunk.type:
-                    case b"IHDR":
-                        self.ihdr = chunk
-                    case b"PLTE":
-                        self.plte = chunk
-                    case b"IDAT":
-                        self.compressed_data += chunk.data
-                    case _:
-                        self.chunks.append(self.Chunk.make_chunk(in_file))
+    def __init__(self, filename=None, array=None):
+        if filename is not None:
+            in_file = open(filename, "rb")
+            self.header = self.Header(in_file)
+            if self.header.valid:
+                self.chunks = []
                 chunk = self.Chunk.make_chunk(in_file)
-        in_file.close()
+                while chunk.type != b"IEND":
+                    match chunk.type:
+                        case b"IHDR":
+                            self.ihdr = chunk
+                        case b"PLTE":
+                            self.plte = chunk
+                        case b"IDAT":
+                            self.compressed_data += chunk.data
+                        case _:
+                            self.chunks.append(chunk)
+                    chunk = self.Chunk.make_chunk(in_file)
+            in_file.close()
+        elif array is not None:
+            self.header = self.Header()
+            self.ihdr = self.Ihdr(width=len(array), height=len(array[0]))
+            self.array_to_bytes()
+            self.compressed_data = zlib_.compress(io.BytesIO(self.raw_data))
+    
+    def __bytes__(self):
+        data = bytearray()
+        data += bytes(self.header)
+        data += bytes(self.ihdr)
+        if self.plte is not None:
+            data += bytes(self.plte)
+        if self.chunks is not None:
+            for chunk in self.chunks:
+                data += bytes(chunk)
+        idat = self.Chunk(data=self.compressed_data, chunk_type=b"IDAT")
+        data += bytes(idat)
+        data += bytes(self.Chunk())
+        return bytes(data)
+
+    def array_to_bytes(self):
+        self.raw_data = bytearray()
+        for i in range(len(self.array)):
+            for j in range(len(self.array[i])):
+                self.raw_data += struct.pack(
+                    "<BBB",
+                    self.array[i][j][0],
+                    self.array[i][j][1],
+                    self.array[i][j][2],
+                )
 
 
 if __name__ == "__main__":
     png = Png(filename="sample/bulbasaur.png")
+    # output = open("png_test.png", "wb")
+    # output.write(bytes(png))
+    # output.close()
     if png.header.valid:
         print(f"Image width: {png.ihdr.width} pixels")
         print(f"Image height: {png.ihdr.height} pixels")
@@ -113,11 +196,9 @@ if __name__ == "__main__":
         print(f"Filter: {png.ihdr.filter}")
         print(f"Interlace: {png.ihdr.interlace}")
         print(f"Header size: {png.ihdr.length}")
-        print(f"Included header CRC: {hex(int.from_bytes(png.ihdr.crc))}")
-        print(f"Calculated header CRC: {hex(png.ihdr.calc_crc())}")
+        print(f"Compressed data: {png.compressed_data}")
         for chunk in png.chunks:
             print(f"Chunk length: {chunk.length} bytes")
             print(f"Chunk type: {chunk.type}")
-            print(f"Included CRC: {hex(int.from_bytes(chunk.crc))}")
-        print(f"Calculated CRC: {hex(chunk.calc_crc())}")
-    pass
+
+    
