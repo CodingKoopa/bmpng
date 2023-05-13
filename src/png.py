@@ -169,8 +169,10 @@ class Png:
         if self.chunks is not None:
             for chunk in self.chunks:
                 data += bytes(chunk)
-        idat = self.Chunk(data=self.compressed_data, chunk_type=b"IDAT")
-        data += bytes(idat)
+        for i in range(0, len(self.compressed_data), 8*1024):
+            compressed_data = self.compressed_data[i:i+8*1024]
+            idat = self.Chunk(data=compressed_data, chunk_type=b"IDAT")
+            data += bytes(idat)
         data += bytes(self.Chunk())
         return bytes(data)
 
@@ -205,9 +207,9 @@ if __name__ == "__main__":
     #         print(f"Chunk length: {chunk.length} bytes")
     #         print(f"Chunk type: {chunk.type}")
     image = []
-    for x in range(10):
+    for x in range(500):
         image.append([])
-        for y in range(10):
+        for y in range(500):
             image[x].append((4, 152, 219))
     png = Png(array=image)
     output = open("png_test.png", "wb")
