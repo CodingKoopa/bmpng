@@ -3,10 +3,12 @@
 # Copyright 2023 Lucy Loerker, Maxwell Parker-Blue
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-import struct
 import io
+import struct
 from dataclasses import dataclass
+
 import zlib_
+
 
 @dataclass
 class Png:
@@ -24,7 +26,7 @@ class Png:
             else:
                 self.signature = self.SIGNATURE
                 self.valid = True
-        
+
         def __bytes__(self):
             return struct.pack(self.FMT, self.signature)
 
@@ -155,7 +157,7 @@ class Png:
             self.ihdr = self.Ihdr(width=len(array), height=len(array[0]))
             self.array_to_bytes()
             self.compressed_data = zlib_.compress(io.BytesIO(self.raw_data))
-    
+
     def __bytes__(self):
         data = bytearray()
         data += bytes(self.header)
@@ -200,5 +202,3 @@ if __name__ == "__main__":
         for chunk in png.chunks:
             print(f"Chunk length: {chunk.length} bytes")
             print(f"Chunk type: {chunk.type}")
-
-    
