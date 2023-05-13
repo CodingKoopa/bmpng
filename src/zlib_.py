@@ -183,7 +183,7 @@ class Zlib:
         if self.header.flevel == CompressionLevel.FASTEST:
             self.__compress_nocompression(f.read())
         else:
-            self.__compress_huffmanfixed_lz(f)
+            self.__compress_huffmanfixed(f)
 
     def _decompress(self):
         if self.header.fdict is True:
