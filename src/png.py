@@ -183,9 +183,9 @@ class Png:
             for j in range(len(array[i])):
                 self.raw_data += struct.pack(
                     "!BBB",
-                    array[i][j][0],
-                    array[i][j][1],
-                    array[i][j][2],
+                    array[j][i][0],
+                    array[j][i][1],
+                    array[j][i][2],
                 )
 
 
@@ -208,10 +208,10 @@ if __name__ == "__main__":
     #         print(f"Chunk length: {chunk.length} bytes")
     #         print(f"Chunk type: {chunk.type}")
     image = []
-    for x in range(500):
+    for x in range(256):
         image.append([])
-        for y in range(500):
-            image[x].append((4, 152, 219))
+        for y in range(256):
+            image[x].append((x, 0, y))
     png = Png(array=image)
     output = open("png_test.png", "wb")
     output.write(bytes(png))
