@@ -43,6 +43,24 @@ class Png:
                     return Png.Ihdr(data)
                 case _:
                     return cls(data)
+        
+        #Adapted from W3's sample C implementation
+        def calc_crc(self):
+            crc_table = []
+            for n in range(256):
+                c = n
+                for k in range(8):
+                    if(c & 1):
+                        c = 0xedb88320 ^ (c >> 1)
+                    else: 
+                        c >>= 1
+                crc_table.append(c)
+            crc = 0xffffffff
+            for n in range(4):
+                crc = crc_table[(crc^self.type[n]) & 0xff] ^ (crc >> 8)
+            for n in range(self.length):
+                crc = crc_table[(crc^self.data[n]) & 0xff] ^ (crc >> 8)
+            return crc ^ 0xffffffff
 
     @dataclass
     class Ihdr(Chunk):
@@ -83,6 +101,7 @@ class Png:
                 chunk = self.Chunk.make_chunk(in_file)
         in_file.close()
 
+
 if __name__ == "__main__":
     png = Png(filename="sample/bulbasaur.png")
     if png.header.valid:
@@ -93,7 +112,12 @@ if __name__ == "__main__":
         print(f"Compression: {png.ihdr.compression}")
         print(f"Filter: {png.ihdr.filter}")
         print(f"Interlace: {png.ihdr.interlace}")
+        print(f"Header size: {png.ihdr.length}")
+        print(f"Included header CRC: {hex(int.from_bytes(png.ihdr.crc))}")
+        print(f"Calculated header CRC: {hex(png.ihdr.calc_crc())}")
         for chunk in png.chunks:
             print(f"Chunk length: {chunk.length} bytes")
             print(f"Chunk type: {chunk.type}")
+            print(f"Included CRC: {hex(int.from_bytes(chunk.crc))}")
+        print(f"Calculated CRC: {hex(chunk.calc_crc())}")
     pass
