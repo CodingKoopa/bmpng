@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 import deflate
 from bitwriter import BitWriter
+import lz77
 
 # zlib container RFC: https://www.rfc-editor.org/rfc/rfc1950
 
