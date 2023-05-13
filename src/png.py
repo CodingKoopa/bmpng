@@ -89,7 +89,8 @@ class Png:
                 crc = crc_table[(crc ^ self.type[n]) & 0xFF] ^ (crc >> 8)
             for n in range(self.length):
                 crc = crc_table[(crc ^ self.data[n]) & 0xFF] ^ (crc >> 8)
-            self.crc = struct.pack("!I", crc ^ 0xFFFFFFFF)
+            crc ^= 0xFFFFFFFF
+            self.crc = struct.pack("!I", crc)
 
     @dataclass
     class Ihdr(Chunk):
@@ -127,6 +128,7 @@ class Png:
                     self.filter,
                     self.interlace,
                 )
+                self.calc_crc()
 
     compressed_data = b""
     chunks = None
@@ -155,8 +157,8 @@ class Png:
         elif array is not None:
             self.header = self.Header()
             self.ihdr = self.Ihdr(width=len(array), height=len(array[0]))
-            self.array_to_bytes()
-            self.compressed_data = zlib_.compress(io.BytesIO(self.raw_data))
+            self.array_to_bytes(array)
+            self.compressed_data = bytes(zlib_.compress(io.BytesIO(self.raw_data)))
 
     def __bytes__(self):
         data = bytearray()
@@ -172,33 +174,42 @@ class Png:
         data += bytes(self.Chunk())
         return bytes(data)
 
-    def array_to_bytes(self):
+    def array_to_bytes(self, array):
         self.raw_data = bytearray()
-        for i in range(len(self.array)):
-            for j in range(len(self.array[i])):
+        for i in range(len(array)):
+            for j in range(len(array[i])):
                 self.raw_data += struct.pack(
                     "<BBB",
-                    self.array[i][j][0],
-                    self.array[i][j][1],
-                    self.array[i][j][2],
+                    array[i][j][0],
+                    array[i][j][1],
+                    array[i][j][2],
                 )
 
 
 if __name__ == "__main__":
-    png = Png(filename="sample/bulbasaur.png")
-    # output = open("png_test.png", "wb")
-    # output.write(bytes(png))
-    # output.close()
-    if png.header.valid:
-        print(f"Image width: {png.ihdr.width} pixels")
-        print(f"Image height: {png.ihdr.height} pixels")
-        print(f"Bit depth: {png.ihdr.bit_depth} bits")
-        print(f"Color type: {png.ihdr.color_type}")
-        print(f"Compression: {png.ihdr.compression}")
-        print(f"Filter: {png.ihdr.filter}")
-        print(f"Interlace: {png.ihdr.interlace}")
-        print(f"Header size: {png.ihdr.length}")
-        print(f"Compressed data: {png.compressed_data}")
-        for chunk in png.chunks:
-            print(f"Chunk length: {chunk.length} bytes")
-            print(f"Chunk type: {chunk.type}")
+    # png = Png(filename="sample/bulbasaur.png")
+    # # output = open("png_test.png", "wb")
+    # # output.write(bytes(png))
+    # # output.close()
+    # if png.header.valid:
+    #     print(f"Image width: {png.ihdr.width} pixels")
+    #     print(f"Image height: {png.ihdr.height} pixels")
+    #     print(f"Bit depth: {png.ihdr.bit_depth} bits")
+    #     print(f"Color type: {png.ihdr.color_type}")
+    #     print(f"Compression: {png.ihdr.compression}")
+    #     print(f"Filter: {png.ihdr.filter}")
+    #     print(f"Interlace: {png.ihdr.interlace}")
+    #     print(f"Header size: {png.ihdr.length}")
+    #     print(f"Compressed data: {png.compressed_data}")
+    #     for chunk in png.chunks:
+    #         print(f"Chunk length: {chunk.length} bytes")
+    #         print(f"Chunk type: {chunk.type}")
+    image = []
+    for x in range(10):
+        image.append([])
+        for y in range(10):
+            image[x].append((4, 152, 219))
+    png = Png(array=image)
+    output = open("png_test.png", "wb")
+    output.write(bytes(png))
+    output.close()
