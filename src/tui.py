@@ -4,18 +4,19 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 from bmp import Bmp
-
+from png import Png
 
 def main_loop():
-    filename = input("what file would you like to open? (type EXIT to close program) ")
+    filename = input("what bmp file would you like to open? (type EXIT to close program) ")
     if filename.upper() == "EXIT":
         print("goodbye!")
         quit()
     bmp = Bmp(filename=filename)
     if bmp.header.valid:
-        # output = open("output_test.bmp", "wb")
-        # output.write(bytes(bmp))
-        # output.close()
+        png = Png(array=bmp.arr)
+        output = open(filename.rstrip("bmp") + "png", "wb")
+        output.write(bytes(png))
+        output.close()
         print("it's valid!:3")
         print("size = " + str(bmp.header.size) + " bytes")
         print("pixel array starting address: " + str(bmp.header.offset))
