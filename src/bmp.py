@@ -182,6 +182,6 @@ if __name__ == "__main__":
     bmp = Bmp(reference_image=image)
     # bmp = Bmp(filename="sample/bulbasaur.bmp")
     # new_bmp = Bmp(reference_image=bmp.arr)
-    output = open("output_test.bmp", "wb")
+    output = open("sample/example_gradient.bmp", "wb")
     output.write(bytes(bmp))
     output.close()
